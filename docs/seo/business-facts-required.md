@@ -1,6 +1,23 @@
 # Business Facts Required Before SEO Implementation
 
-This file is an approval gate for public copy, LocalBusiness schema, Google Business Profile work, citations, contact details, and location claims. Complete it with verified facts before building or deploying SEO pages.
+This file is an approval gate for public copy, Organization/LocalBusiness schema, Google Business Profile work, citations, contact details, location claims, and the relationship between `www.sanctify.in` and `webdesigncompanygoa.in`. Complete it with verified facts before building, migrating, or deploying SEO pages. The ownership and migration rules are defined in [`two-domain-seo-strategy.md`](two-domain-seo-strategy.md).
+
+## Domain and entity relationship
+
+| Field | Verified value | Evidence/source | Approved by | Status |
+|---|---|---|---|---|
+| Sanctify is the legal/public business behind the specialist |  |  |  | Required |
+| Approved specialist display name |  |  |  | Required |
+| Approved relationship disclosure wording |  |  |  | Required |
+| Authoritative Organization `@id` | `https://www.sanctify.in/#organization` (proposed) |  |  | Required |
+| Specialist provider/publisher reference |  |  |  | Required |
+| Domain and trademark ownership confirmed |  |  |  | Required |
+| Lead ownership and routing across both domains |  |  |  | Required |
+| Privacy/controller disclosure across both domains |  |  |  | Required |
+| Separate legal entity for specialist? |  |  |  | Must be verified; default is no |
+| Separate eligible GBP for specialist? |  |  |  | Must be verified; default is no |
+
+Until verified evidence proves otherwise, treat the specialist as a service-focused website operated by Sanctify—not as a second unrelated business. Use one Organization identity and one GBP for the real business.
 
 ## Identity and location
 
@@ -79,6 +96,21 @@ Never invent client counts, rankings, traffic growth, revenue impact, review tot
 | Payment terms |  |  | Optional |
 | Maintenance plan scope |  |  | Required before maintenance page |
 | Support hours/response targets |  |  | Required before support claims |
+
+## Migration approvals
+
+No Sanctify URL may redirect until its identified row in [`sanctify-web-design-migration-map.csv`](sanctify-web-design-migration-map.csv) has `redirect_ready=true`. That state requires an approved content-equivalent roadmap destination that returns `200`, is indexable, is self-canonical, and has named/date-stamped equivalence approval.
+
+| Field | Verified value | Evidence/source | Approved by | Status |
+|---|---|---|---|---|
+| Sanctify Search Console export archived |  |  |  | Required before cutover |
+| Specialist Search Console property verified |  |  |  | Required before cutover |
+| Specialist 403/WAF issue resolved |  |  |  | Required before cutover |
+| One-to-one redirect map approved |  |  |  | Required before cutover |
+| Destination content equivalence reviewed |  |  |  | Required per URL |
+| Internal links and sitemaps update prepared |  |  |  | Required before cutover |
+| Analytics cross-domain/hostname QA passed |  |  |  | Required before cutover |
+| Rollback owner and incident procedure approved |  |  |  | Required before cutover |
 
 ## Approval
 

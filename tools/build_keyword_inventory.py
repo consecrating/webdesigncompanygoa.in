@@ -10,12 +10,23 @@ from __future__ import annotations
 
 import csv
 from dataclasses import dataclass, fields
+from datetime import date
 from pathlib import Path
 from typing import Iterable
+from urllib.parse import urlparse
 
 RESEARCH_DATE = "2026-08-30"
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = ROOT / "docs" / "seo"
+MIGRATION_MAP_PATH = OUTPUT_DIR / "sanctify-web-design-migration-map.csv"
+
+BASE_URLS = {
+    "sanctify": "https://www.sanctify.in",
+    "goa_specialist": "https://webdesigncompanygoa.in",
+}
+
+SANCTIFY_LOCAL_SEO_PATH = "/sanctify-facility/local-seo-services-goa/"
+SANCTIFY_LOCAL_GUIDE_PATH = "/local-seo-google-business-profile-goa/"
 
 USER_SEEDS = {
     "website design company in goa",
@@ -123,6 +134,8 @@ class KeywordRow:
     source_url: str
     observed_at: str
     status: str
+    site_owner: str
+    canonical_url: str
     monthly_searches: str = ""
     keyword_difficulty: str = ""
     cpc_inr: str = ""
@@ -144,6 +157,8 @@ class LocalKeywordRow:
     source_url: str
     observed_at: str
     status: str
+    site_owner: str
+    canonical_url: str
     notes: str
 
 
@@ -161,6 +176,20 @@ class RoadmapRow:
     prerequisite: str
     status: str
     notes: str
+    site_owner: str
+    canonical_url: str
+    canonical_template: str
+
+
+def build_canonical_url(site_owner: str, target_url: str) -> str:
+    """Return an absolute canonical URL for an approved site owner and path."""
+    try:
+        base_url = BASE_URLS[site_owner]
+    except KeyError as exc:
+        raise ValueError(f"Unknown site owner: {site_owner!r}") from exc
+    if not target_url.startswith("/"):
+        raise ValueError(f"Target URL must be root-relative: {target_url!r}")
+    return f"{base_url}{target_url}"
 
 
 def evidence_for(keyword: str) -> tuple[str, str, str, str]:
@@ -208,6 +237,7 @@ def add_keyword_group(
     priority: str,
     location_modifier: str = "Goa",
     notes: str = "",
+    site_owner: str = "goa_specialist",
 ) -> None:
     for phrase in phrases:
         source_evidence, source_query, source_url, observed_at = evidence_for(phrase)
@@ -227,6 +257,8 @@ def add_keyword_group(
                 source_url=source_url,
                 observed_at=observed_at,
                 status="mapped_needs_volume_validation",
+                site_owner=site_owner,
+                canonical_url=build_canonical_url(site_owner, target_url),
                 notes=notes,
             )
         )
@@ -509,10 +541,11 @@ def build_keyword_map() -> list[KeywordRow]:
         cluster="local_seo_and_organic_search",
         search_intent="commercial_transactional",
         funnel_stage="decision",
-        target_url="/local-seo-goa/",
+        target_url=SANCTIFY_LOCAL_SEO_PATH,
         page_type="service_page",
         keyword_role="primary_and_secondary",
         priority="P0",
+        site_owner="sanctify",
     )
 
     add_keyword_group(
@@ -539,10 +572,11 @@ def build_keyword_map() -> list[KeywordRow]:
         cluster="google_business_profile",
         search_intent="commercial_transactional",
         funnel_stage="decision",
-        target_url="/google-business-profile-optimization-goa/",
-        page_type="service_page",
+        target_url=SANCTIFY_LOCAL_GUIDE_PATH,
+        page_type="service_and_guide_page",
         keyword_role="primary_and_secondary",
         priority="P1",
+        site_owner="sanctify",
     )
 
     pricing_terms = [
@@ -561,8 +595,6 @@ def build_keyword_map() -> list[KeywordRow]:
         "low cost website design goa",
         "cheap website design goa",
         "website maintenance cost goa",
-        "seo pricing goa",
-        "local seo packages goa",
         "how much does website design cost in goa",
         "factors affecting website development cost",
         "ecommerce website development cost india",
@@ -583,6 +615,19 @@ def build_keyword_map() -> list[KeywordRow]:
         keyword_role="primary_and_secondary",
         priority="P1",
         notes="Publish transparent ranges and scope factors only after commercial pricing is approved.",
+    )
+    add_keyword_group(
+        rows,
+        phrases=["seo pricing goa", "local seo packages goa"],
+        cluster="local_seo_pricing",
+        search_intent="commercial_investigation",
+        funnel_stage="consideration",
+        target_url=SANCTIFY_LOCAL_SEO_PATH,
+        page_type="service_page",
+        keyword_role="secondary",
+        priority="P1",
+        site_owner="sanctify",
+        notes="Sanctify owns Local SEO commercial intent; publish pricing only after scope and ranges are approved.",
     )
 
     industries = [
@@ -666,7 +711,7 @@ def build_keyword_map() -> list[KeywordRow]:
         ),
         (
             "local_seo_guides",
-            "/guides/local-seo-goa/",
+            SANCTIFY_LOCAL_GUIDE_PATH,
             [
                 "how to optimize google business profile",
                 "local seo checklist for goa businesses",
@@ -699,7 +744,7 @@ def build_keyword_map() -> list[KeywordRow]:
         ),
         (
             "google_maps_guide",
-            "/guides/rank-google-maps-goa/",
+            SANCTIFY_LOCAL_GUIDE_PATH,
             ["how to rank on google maps in goa"],
         ),
         (
@@ -714,6 +759,11 @@ def build_keyword_map() -> list[KeywordRow]:
         ),
     ]
     for cluster, target_url, phrases in informational_groups:
+        site_owner = (
+            "sanctify"
+            if target_url == SANCTIFY_LOCAL_GUIDE_PATH
+            else "goa_specialist"
+        )
         add_keyword_group(
             rows,
             phrases=phrases,
@@ -725,6 +775,7 @@ def build_keyword_map() -> list[KeywordRow]:
             keyword_role="primary_and_supporting",
             priority="P2",
             location_modifier="Goa_or_India_where_natural",
+            site_owner=site_owner,
         )
 
     unique: dict[str, KeywordRow] = {}
@@ -804,13 +855,14 @@ def build_local_keyword_map() -> list[LocalKeywordRow]:
         "Vasco",
     }
     statewide_targets = {
-        "web_development": "/website-development-goa/",
-        "local_seo": "/local-seo-goa/",
+        "web_development": ("goa_specialist", "/website-development-goa/"),
+        "local_seo": ("sanctify", SANCTIFY_LOCAL_SEO_PATH),
     }
 
     for locality, region, target_url, page_strategy in LOCATIONS:
         for stem, cluster in LOCAL_STEMS:
             phrase = f"{stem} in {locality}"
+            site_owner = "goa_specialist"
             mapped_target_url = target_url
             mapped_page_strategy = page_strategy
             notes = (
@@ -820,16 +872,16 @@ def build_local_keyword_map() -> list[LocalKeywordRow]:
 
             if locality == "Goa":
                 priority = "P0"
-                mapped_target_url = {
-                    "web_design": "/",
-                    **statewide_targets,
-                }[cluster]
+                if cluster == "web_design":
+                    mapped_target_url = "/"
+                else:
+                    site_owner, mapped_target_url = statewide_targets[cluster]
                 mapped_page_strategy = (
                     "homepage" if cluster == "web_design" else "statewide_service_page"
                 )
             else:
                 if cluster != "web_design":
-                    mapped_target_url = statewide_targets[cluster]
+                    site_owner, mapped_target_url = statewide_targets[cluster]
                     mapped_page_strategy = "statewide_service_page_pending_local_validation"
                     notes = (
                         "Keep this candidate on the statewide service page unless local "
@@ -860,6 +912,8 @@ def build_local_keyword_map() -> list[LocalKeywordRow]:
                     source_url=source_url,
                     observed_at=observed_at,
                     status="candidate_needs_local_volume_and_gsc_validation",
+                    site_owner=site_owner,
+                    canonical_url=build_canonical_url(site_owner, mapped_target_url),
                     notes=notes,
                 )
             )
@@ -871,14 +925,19 @@ def build_local_keyword_map() -> list[LocalKeywordRow]:
         ("web designer near me", "web_design", "/"),
         ("website developer near me", "web_development", "/website-development-goa/"),
         ("web development company near me", "web_development", "/website-development-goa/"),
-        ("local seo company near me", "local_seo", "/local-seo-goa/"),
-        ("seo company near me", "local_seo", "/local-seo-goa/"),
-        ("google business profile expert near me", "google_business_profile", "/google-business-profile-optimization-goa/"),
+        ("local seo company near me", "local_seo", SANCTIFY_LOCAL_SEO_PATH),
+        ("seo company near me", "local_seo", SANCTIFY_LOCAL_SEO_PATH),
+        ("google business profile expert near me", "google_business_profile", SANCTIFY_LOCAL_GUIDE_PATH),
         ("website maintenance company near me", "maintenance", "/website-maintenance-goa/"),
         ("ecommerce website developer near me", "ecommerce", "/ecommerce-website-development-goa/"),
         ("wordpress developer near me", "wordpress", "/wordpress-website-design-goa/"),
     ]
     for phrase, cluster, target_url in near_me_terms:
+        site_owner = (
+            "sanctify"
+            if cluster in {"local_seo", "google_business_profile"}
+            else "goa_specialist"
+        )
         rows.append(
             LocalKeywordRow(
                 keyword=phrase,
@@ -894,6 +953,8 @@ def build_local_keyword_map() -> list[LocalKeywordRow]:
                 source_url="",
                 observed_at="",
                 status="candidate_needs_gsc_and_gbp_validation",
+                site_owner=site_owner,
+                canonical_url=build_canonical_url(site_owner, target_url),
                 notes="Near-me visibility depends heavily on verified location/service area, relevance, distance, and prominence; do not stuff 'near me' into copy.",
             )
         )
@@ -916,10 +977,11 @@ def build_roadmap() -> list[RoadmapRow]:
         ("P0", "1", "Website Design Company in Goa", "/", "homepage", "website design company in goa", "core web design variants", "commercial_transactional", "project enquiry", "Resolve public 403; confirm NAP and services", "planned", "One homepage owns all close design/company/agency variants."),
         ("P0", "1", "Website Development Company in Goa", "/website-development-goa/", "service_page", "website development company in goa", "developers, custom development, web apps", "commercial_transactional", "development enquiry", "Confirm development capabilities and portfolio proof", "planned", "Separate design intent from deeper engineering intent."),
         ("P0", "1", "Ecommerce Website Development in Goa", "/ecommerce-website-development-goa/", "service_page", "ecommerce website development company in goa", "Shopify, WooCommerce, online stores", "commercial_transactional", "store build enquiry", "Confirm supported platforms and integrations", "planned", "Include payments, catalog, shipping, and case-study proof."),
-        ("P0", "1", "Local SEO Services in Goa", "/local-seo-goa/", "service_page", "local seo services in goa", "SEO company, Maps SEO, local business SEO", "commercial_transactional", "SEO consultation", "Define actual deliverables and reporting", "planned", "Connect website optimization with GBP, citations, reviews, and local content."),
-        ("P1", "1", "Google Business Profile Optimization in Goa", "/google-business-profile-optimization-goa/", "service_page", "google business profile optimization goa", "GBP management, Google Maps ranking", "commercial_transactional", "GBP audit request", "Confirm service ownership and access process", "planned", "Use current GBP naming; mention GMB only as a natural legacy synonym."),
+        ("P0", "1", "Local SEO Services in Goa", SANCTIFY_LOCAL_SEO_PATH, "service_page", "local seo services in goa", "SEO company, Maps SEO, local business SEO", "commercial_transactional", "SEO consultation", "Define actual deliverables and reporting", "existing_owner_review", "Sanctify retains Local SEO ownership; improve the existing page rather than duplicating it on the specialist domain."),
+        ("P1", "1", "Google Business Profile and Local SEO Guide", SANCTIFY_LOCAL_GUIDE_PATH, "existing_service_and_guide_enhancement", "google business profile optimization goa", "GBP management, Maps visibility, Local SEO checklist, reviews, citations", "commercial_transactional", "GBP audit request", "Audit the existing Sanctify page; confirm service ownership and access process", "existing_owner_review", "One Sanctify work item owns GBP commercial intent plus supporting Local SEO and Google Maps guidance; do not create duplicate specialist or Sanctify pages."),
         ("P1", "1", "Website Redesign Services in Goa", "/website-redesign-goa/", "service_page", "website redesign company in goa", "revamp, migration, responsive redesign", "commercial_transactional", "redesign audit request", "Create before-and-after evidence", "planned", "Address dated design, slow speed, poor mobile UX, weak conversion, and SEO migration."),
         ("P1", "1", "Website Maintenance Services in Goa", "/website-maintenance-goa/", "service_page", "website maintenance services in goa", "AMC, support, backups, security", "commercial_transactional", "maintenance plan enquiry", "Define plan scope and response times", "planned", "Avoid promises not supported by operations."),
+        ("P2", "1", "Website Speed Optimization in Goa", "/website-speed-optimization-goa/", "service_page", "website speed optimization goa", "Core Web Vitals, performance audit, mobile performance", "commercial_transactional", "performance audit request", "Confirm performance capability and reporting method", "planned", "Performance owns speed and Core Web Vitals intent; responsive-design migration remains blocked until equivalence is proven."),
         ("P1", "1", "WordPress Website Design in Goa", "/wordpress-website-design-goa/", "service_page", "wordpress website design company in goa", "WordPress developer, WooCommerce", "commercial_transactional", "WordPress project enquiry", "Confirm WordPress is an offered platform", "conditional", "Do not publish unless this is a real service."),
         ("P1", "1", "Website Design Cost in Goa", "/website-design-cost-goa/", "commercial_guide", "website design cost in goa", "prices, packages, charges", "commercial_investigation", "qualified quote request", "Approve honest pricing ranges", "planned", "Explain scope drivers; avoid bait pricing."),
         ("P1", "2", "Hotel Website Design in Goa", "/industries/hotel-website-design-goa/", "industry_page", "hotel website design company goa", "direct booking, hospitality SEO", "commercial_transactional", "hotel project enquiry", "Require hospitality work or demonstrable expertise", "planned", "Highest-fit Goa vertical; emphasize direct bookings and OTA independence."),
@@ -931,8 +993,7 @@ def build_roadmap() -> list[RoadmapRow]:
         ("P1", "2", "Web Design Company in North Goa", "/locations/north-goa/", "regional_hub", "web design company in north goa", "Panaji, Mapusa, Porvorim, coastal belt", "local_transactional", "local enquiry", "Confirm service coverage and local proof", "conditional", "Build before town pages; include genuine regional evidence."),
         ("P1", "2", "Web Design Company in South Goa", "/locations/south-goa/", "regional_hub", "web design company in south goa", "Margao, Vasco, coastal belt", "local_transactional", "local enquiry", "Confirm service coverage and local proof", "conditional", "Build before town pages; include genuine regional evidence."),
         ("P2", "3", "How to Choose a Web Design Company in Goa", "/guides/choose-web-design-company-goa/", "guide", "how to choose a web design company in goa", "agency vs freelancer, questions, brief", "informational_commercial", "consultation", "Publish service and proof pages first", "planned", "Decision-support content that internally links to homepage and portfolio."),
-        ("P2", "3", "Local SEO Guide for Goa Businesses", "/guides/local-seo-goa/", "pillar_guide", "local seo checklist for goa businesses", "Maps, GBP, reviews, citations", "informational_commercial", "SEO audit request", "Local SEO service page live", "planned", "Link to GBP and Local SEO services."),
-        ("P2", "3", "How to Rank on Google Maps in Goa", "/guides/rank-google-maps-goa/", "guide", "how to rank on google maps in goa", "GBP ranking, reviews, relevance", "informational_commercial", "GBP audit request", "GBP service page live", "planned", "Base claims on Google guidance; no guaranteed ranking promises."),
+        ("P2", "3", "Website Conversion Guide for Goa Businesses", "/guides/website-conversion-goa-business/", "guide", "how to make a website generate more leads", "conversion, mobile UX, speed, trust signals", "informational_commercial", "website audit request", "Core specialist service and proof pages live", "planned", "Specialist owns website conversion guidance; broader marketing/CRO intent remains on Sanctify when materially distinct."),
         ("P2", "3", "Website Redesign Checklist", "/guides/website-redesign-checklist/", "guide", "signs your website needs a redesign", "migration, mobile, speed, conversion", "informational_commercial", "redesign audit request", "Redesign service page live", "planned", "Include SEO migration safeguards."),
         ("P2", "3", "Best Website Platform for a Goa Small Business", "/guides/best-website-platform-small-business-goa/", "comparison_guide", "best website platform for small business in goa", "WordPress, Shopify, custom", "informational_commercial", "platform consultation", "Confirm offered platforms", "planned", "Recommend by use case, not a one-size-fits-all winner."),
         ("P2", "3", "Hotel Website Direct Booking Guide", "/guides/hotel-direct-booking-website-goa/", "vertical_guide", "hotel website direct booking optimization", "booking engine, OTA, conversion", "informational_commercial", "hotel project enquiry", "Hotel service page live", "planned", "Build topical depth around the strongest Goa vertical."),
@@ -943,7 +1004,29 @@ def build_roadmap() -> list[RoadmapRow]:
         ("P2", "4", "Web Design Company in Vasco da Gama", "/locations/vasco-da-gama/", "local_page", "website design company in vasco da gama", "Vasco web designer", "local_transactional", "local enquiry", "Unique Vasco proof and demand validation", "conditional", "Use Vasco as a natural synonym."),
         ("P3_validate", "4", "Additional Goa Town Pages", "/locations/{locality}/", "local_page_template", "see local-seo-keywords.csv", "town and neighborhood modifiers", "local_transactional", "local enquiry", "GSC/GBP evidence plus unique proof for each town", "deferred", "Never mass-publish the full locality matrix; it is a research inventory, not a doorway-page instruction."),
     ]
-    return [RoadmapRow(*row) for row in raw_rows]
+    rows: list[RoadmapRow] = []
+    for row in raw_rows:
+        target_url = row[3]
+        site_owner = (
+            "sanctify"
+            if target_url in {SANCTIFY_LOCAL_SEO_PATH, SANCTIFY_LOCAL_GUIDE_PATH}
+            else "goa_specialist"
+        )
+        is_template = "{" in target_url or "}" in target_url
+        canonical_template = (
+            build_canonical_url(site_owner, target_url) if is_template else ""
+        )
+        rows.append(
+            RoadmapRow(
+                *row,
+                site_owner=site_owner,
+                canonical_url=(
+                    "" if is_template else build_canonical_url(site_owner, target_url)
+                ),
+                canonical_template=canonical_template,
+            )
+        )
+    return rows
 
 
 def validate_relationships(
@@ -958,14 +1041,23 @@ def validate_relationships(
     for keyword in keyword_index.keys() & local_index.keys():
         keyword_row = keyword_index[keyword]
         local_row = local_index[keyword]
-        if (keyword_row.target_url, keyword_row.priority) != (
+        if (
+            keyword_row.target_url,
+            keyword_row.priority,
+            keyword_row.site_owner,
+            keyword_row.canonical_url,
+        ) != (
             local_row.target_url,
             local_row.priority,
+            local_row.site_owner,
+            local_row.canonical_url,
         ):
             raise ValueError(
                 f"Cross-inventory ownership drift for {keyword!r}: "
-                f"{keyword_row.target_url!r}/{keyword_row.priority} and "
-                f"{local_row.target_url!r}/{local_row.priority}"
+                f"{keyword_row.site_owner}/{keyword_row.target_url!r}/"
+                f"{keyword_row.priority} and "
+                f"{local_row.site_owner}/{local_row.target_url!r}/"
+                f"{local_row.priority}"
             )
 
     combined_index: dict[str, KeywordRow | LocalKeywordRow] = {
@@ -982,14 +1074,23 @@ def validate_relationships(
                 f"Roadmap primary keyword has no inventory row: "
                 f"{roadmap_row.primary_keyword!r}"
             )
-        if (inventory_row.target_url, inventory_row.priority) != (
+        if (
+            inventory_row.target_url,
+            inventory_row.priority,
+            inventory_row.site_owner,
+            inventory_row.canonical_url,
+        ) != (
             roadmap_row.target_url,
             roadmap_row.priority,
+            roadmap_row.site_owner,
+            roadmap_row.canonical_url,
         ):
             raise ValueError(
                 f"Roadmap ownership drift for {roadmap_row.primary_keyword!r}: "
-                f"{inventory_row.target_url!r}/{inventory_row.priority} and "
-                f"{roadmap_row.target_url!r}/{roadmap_row.priority}"
+                f"{inventory_row.site_owner}/{inventory_row.target_url!r}/"
+                f"{inventory_row.priority} and "
+                f"{roadmap_row.site_owner}/{roadmap_row.target_url!r}/"
+                f"{roadmap_row.priority}"
             )
 
     positive_evidence = {"google_autocomplete_in_en", "serp_observed"}
@@ -1037,10 +1138,233 @@ def validate_relationships(
                 f"Website-cost keyword has the wrong canonical owner: {row.keyword!r}"
             )
 
+    for row in [*keyword_rows, *local_rows, *roadmap_rows]:
+        is_roadmap_template = isinstance(row, RoadmapRow) and bool(
+            row.canonical_template
+        )
+        if is_roadmap_template:
+            if row.canonical_url or row.status != "deferred" or row.priority != "P3_validate":
+                raise ValueError(
+                    f"Roadmap template must be deferred and non-canonical: "
+                    f"{row.target_url!r}"
+                )
+            if row.canonical_template != build_canonical_url(
+                row.site_owner, row.target_url
+            ):
+                raise ValueError(
+                    f"Roadmap canonical template drift: {row.canonical_template!r}"
+                )
+            continue
+
+        expected_canonical = build_canonical_url(row.site_owner, row.target_url)
+        if row.canonical_url != expected_canonical:
+            raise ValueError(
+                f"Canonical URL drift for {row.target_url!r}: "
+                f"{row.canonical_url!r} != {expected_canonical!r}"
+            )
+        expected_host = urlparse(BASE_URLS[row.site_owner]).hostname
+        if urlparse(row.canonical_url).hostname != expected_host:
+            raise ValueError(
+                f"Canonical host does not match site owner {row.site_owner!r}: "
+                f"{row.canonical_url!r}"
+            )
+
+    roadmap_canonical_owners: dict[str, RoadmapRow] = {}
+    for row in roadmap_rows:
+        if not row.canonical_url:
+            continue
+        existing = roadmap_canonical_owners.get(row.canonical_url)
+        if existing is not None:
+            raise ValueError(
+                f"Roadmap canonical has multiple work items: {row.canonical_url!r} "
+                f"({existing.proposed_title!r}, {row.proposed_title!r})"
+            )
+        roadmap_canonical_owners[row.canonical_url] = row
+
     valid_priorities = {"P0", "P1", "P2", "P3_validate"}
     for row in [*keyword_rows, *local_rows, *roadmap_rows]:
         if row.priority not in valid_priorities:
             raise ValueError(f"Unknown priority {row.priority!r}")
+
+
+def validate_migration_map(roadmap_rows: list[RoadmapRow]) -> None:
+    """Reject migration rows that are ambiguous, unmapped, or prematurely ready."""
+    required_fields = [
+        "migration_id",
+        "source_url",
+        "target_owner",
+        "target_path",
+        "canonical_url",
+        "action",
+        "cutover_phase",
+        "content_or_evidence_prerequisite",
+        "status",
+        "equivalence_approved_by",
+        "equivalence_approved_at",
+        "destination_http_status",
+        "destination_indexable",
+        "destination_canonical_verified",
+        "redirect_ready",
+        "notes",
+    ]
+    with MIGRATION_MAP_PATH.open(encoding="utf-8", newline="") as handle:
+        reader = csv.DictReader(handle)
+        if reader.fieldnames != required_fields:
+            raise ValueError(
+                f"Migration map schema drift: {reader.fieldnames!r} != {required_fields!r}"
+            )
+        migration_rows = list(reader)
+
+    if not migration_rows:
+        raise ValueError("Migration map must not be empty")
+
+    roadmap_canonicals = {row.canonical_url for row in roadmap_rows if row.canonical_url}
+    source_urls: set[str] = set()
+    migration_ids: set[str] = set()
+    allowed_actions = {"301_exact_match", "content_audit_required", "inventory_required"}
+    action_statuses = {
+        "301_exact_match": {
+            "blocked_specialist_403",
+            "planned",
+            "conditional_service_verification",
+            "conditional_commercial_approval",
+            "approved_for_cutover",
+        },
+        "content_audit_required": {"needs_content_audit"},
+        "inventory_required": {"needs_inventory"},
+    }
+
+    for row in migration_rows:
+        migration_id = row["migration_id"]
+        source_url = row["source_url"]
+        if not migration_id or migration_id in migration_ids:
+            raise ValueError(f"Missing or duplicate migration ID: {migration_id!r}")
+        if source_url in source_urls:
+            raise ValueError(f"Duplicate migration source URL: {source_url!r}")
+        migration_ids.add(migration_id)
+        source_urls.add(source_url)
+
+        parsed_source = urlparse(source_url)
+        if parsed_source.scheme != "https" or parsed_source.hostname != "www.sanctify.in":
+            raise ValueError(f"Invalid Sanctify migration source: {source_url!r}")
+        if row["target_owner"] not in BASE_URLS:
+            raise ValueError(
+                f"Unknown migration target owner: {row['target_owner']!r}"
+            )
+        if row["action"] not in allowed_actions:
+            raise ValueError(f"Unknown migration action: {row['action']!r}")
+        if row["status"] not in action_statuses[row["action"]]:
+            raise ValueError(
+                f"Migration action/status conflict for {migration_id!r}: "
+                f"{row['action']!r}/{row['status']!r}"
+            )
+        if row["redirect_ready"] not in {"true", "false"}:
+            raise ValueError(
+                f"redirect_ready must be true or false: {migration_id!r}"
+            )
+
+        has_target_path = bool(row["target_path"])
+        has_canonical = bool(row["canonical_url"])
+        if has_target_path != has_canonical:
+            raise ValueError(
+                f"Migration target path/canonical must be both set or both blank: "
+                f"{migration_id!r}"
+            )
+        if row["action"] == "301_exact_match" and not has_target_path:
+            raise ValueError(
+                f"Executable migration lacks a target: {migration_id!r}"
+            )
+        if row["action"] != "301_exact_match" and has_target_path:
+            raise ValueError(
+                f"Unresolved migration must not preselect a target: {migration_id!r}"
+            )
+
+        if has_target_path:
+            expected_canonical = build_canonical_url(
+                row["target_owner"], row["target_path"]
+            )
+            if row["canonical_url"] != expected_canonical:
+                raise ValueError(
+                    f"Migration canonical drift for {migration_id!r}: "
+                    f"{row['canonical_url']!r} != {expected_canonical!r}"
+                )
+            if row["canonical_url"] not in roadmap_canonicals:
+                raise ValueError(
+                    f"Migration target lacks a roadmap owner: "
+                    f"{row['canonical_url']!r}"
+                )
+
+        approval_values = (
+            row["equivalence_approved_by"],
+            row["equivalence_approved_at"],
+        )
+        if any(approval_values) != all(approval_values):
+            raise ValueError(
+                f"Migration approval name/date must be paired: {migration_id!r}"
+            )
+        if all(approval_values):
+            try:
+                date.fromisoformat(row["equivalence_approved_at"])
+            except ValueError as exc:
+                raise ValueError(
+                    f"Invalid migration approval date: "
+                    f"{row['equivalence_approved_at']!r}"
+                ) from exc
+
+        boolean_evidence = (
+            row["destination_indexable"],
+            row["destination_canonical_verified"],
+        )
+        if any(value not in {"", "true", "false"} for value in boolean_evidence):
+            raise ValueError(
+                f"Migration destination booleans must be blank, true, or false: "
+                f"{migration_id!r}"
+            )
+        destination_evidence = (
+            row["destination_http_status"],
+            *boolean_evidence,
+        )
+        if any(destination_evidence) != all(destination_evidence):
+            raise ValueError(
+                f"Migration destination evidence must be completed together: "
+                f"{migration_id!r}"
+            )
+        if row["destination_http_status"]:
+            try:
+                http_status = int(row["destination_http_status"])
+            except ValueError as exc:
+                raise ValueError(
+                    f"Invalid destination HTTP status: "
+                    f"{row['destination_http_status']!r}"
+                ) from exc
+            if http_status < 100 or http_status > 599:
+                raise ValueError(
+                    f"Destination HTTP status is out of range: {http_status!r}"
+                )
+
+        if row["redirect_ready"] == "true":
+            readiness_values = {
+                "status": row["status"] == "approved_for_cutover",
+                "action": row["action"] == "301_exact_match",
+                "target": has_target_path,
+                "approved_by": bool(row["equivalence_approved_by"]),
+                "approved_at": bool(row["equivalence_approved_at"]),
+                "http_status": row["destination_http_status"] == "200",
+                "indexable": row["destination_indexable"] == "true",
+                "canonical_verified": (
+                    row["destination_canonical_verified"] == "true"
+                ),
+            }
+            if not all(readiness_values.values()):
+                failed = [key for key, passed in readiness_values.items() if not passed]
+                raise ValueError(
+                    f"Migration marked ready without passing gates "
+                    f"{failed!r}: {migration_id!r}"
+                )
+        elif row["status"] == "approved_for_cutover":
+            raise ValueError(
+                f"Approved migration must be redirect-ready: {migration_id!r}"
+            )
 
 
 def main() -> None:
@@ -1048,6 +1372,7 @@ def main() -> None:
     local_rows = build_local_keyword_map()
     roadmap_rows = build_roadmap()
     validate_relationships(keyword_rows, local_rows, roadmap_rows)
+    validate_migration_map(roadmap_rows)
 
     write_rows(OUTPUT_DIR / "keyword-map.csv", keyword_rows)
     write_rows(OUTPUT_DIR / "local-seo-keywords.csv", local_rows)

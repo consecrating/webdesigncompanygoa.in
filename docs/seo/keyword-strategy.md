@@ -1,14 +1,16 @@
 # Goa Website Design SEO Keyword Strategy
 
-- **Domain:** `webdesigncompanygoa.in`
+- **Domains:** `webdesigncompanygoa.in` (web-design specialist) and `www.sanctify.in` (main brand/entity)
 - **Research date:** 2026-08-30
 - **Market:** Goa, India
 - **Primary conversion:** Qualified website design/development enquiry
-- **Secondary conversions:** Website audit, Local SEO/Google Business Profile audit, WhatsApp/call, and quote request
+- **Secondary conversions:** Website audit, WhatsApp/call, and quote request; SEO/Local SEO enquiries remain on Sanctify
 
 ## Executive direction
 
-The site should establish one clear entity: a website design and development company serving businesses in Goa that creates high-performing websites and can support local visibility. Physical presence, service-area status, NAP, GBP ownership, and offered services must be approved in [`business-facts-required.md`](business-facts-required.md) before public copy or schema implies a Goa office. The homepage should target **“website design company in Goa”** as the primary phrase while naturally covering close variants such as web design company, website designing company, web designing company, website design agency, website designers, and web designers in Goa.
+The architecture uses one real business entity with two clearly separated site purposes. `www.sanctify.in` remains the corporate brand, Organization/GBP owner, and canonical authority for digital marketing, SEO, Local SEO, and Google Business Profile work. `webdesigncompanygoa.in` is a focused web-design specialist by Sanctify and owns Goa website design, development, ecommerce, WordPress, redesign, maintenance, performance, pricing, industry, and web-design guide intent. The complete separation and migration controls are in [`two-domain-seo-strategy.md`](two-domain-seo-strategy.md); source-to-target actions are in [`sanctify-web-design-migration-map.csv`](sanctify-web-design-migration-map.csv).
+
+The specialist should visibly disclose **“Web Design Company Goa by Sanctify.”** Physical presence, service-area status, NAP, GBP ownership, services, and the relationship between both sites must be approved in [`business-facts-required.md`](business-facts-required.md) before public copy or schema implies a Goa office or a separate business. The specialist homepage should target **“website design company in Goa”** as the primary phrase while naturally covering close variants such as web design company, website designing company, web designing company, website design agency, website designers, and web designers in Goa.
 
 Do **not** create a separate page for every wording variation. Google is likely to treat these as the same or very similar intent, and splitting them would dilute authority and create keyword cannibalization. Separate pages are justified when the service, audience, proof, conversion action, or search intent is genuinely different—for example website development, ecommerce, redesign, maintenance, Local SEO, or hotel website design.
 
@@ -16,7 +18,8 @@ This research pack contains:
 
 - **310 rows** in the master service, commercial, industry, and informational keyword map.
 - **300 rows** in the local SEO and Goa locality inventory.
-- **29 proposed pages** in a phased content roadmap.
+- **29 roadmap work items** in a phased content roadmap, including Sanctify page improvements/consolidation where Sanctify is the owner.
+- **Explicit `site_owner` and absolute `canonical_url` fields** so no row is implicitly assigned to the wrong domain.
 - **No invented volume, difficulty, CPC, rankings, reviews, awards, client counts, or performance claims.**
 
 The two keyword inventories contain 610 mapped rows. They are intentionally broader than the initial publishing plan. A row is a research candidate, not an instruction to create a page.
@@ -38,6 +41,9 @@ This does not prove that Googlebot is blocked, because the server may apply IP- 
 4. Publish a valid `robots.txt` that references the canonical XML sitemap.
 5. Publish the XML sitemap and submit it in Search Console.
 6. Confirm canonical URLs, HTTPS redirects, indexability, and one crawlable version of the hostname.
+7. Do not activate any redirect from Sanctify until the exact specialist destination passes these checks.
+
+Sanctify is already indexable and currently owns many of the planned web-design queries through overlapping service, industry, pricing, and guide URLs. Those pages must follow the reviewed one-to-one actions in the migration map; they must not remain duplicate `200` pages after specialist ownership is transferred.
 
 ## Priority model
 
@@ -120,9 +126,11 @@ Target URL: `/ecommerce-website-development-goa/`
 - B2B ecommerce website development Goa
 - D2C ecommerce website design Goa
 
-### Local SEO service
+### Local SEO service (Sanctify-owned)
 
-Target URL: `/local-seo-goa/`
+Canonical URL: `https://www.sanctify.in/sanctify-facility/local-seo-services-goa/`
+
+These keywords remain mapped for cross-service research, but they must not create Local SEO pages on the specialist domain:
 
 - local SEO company in Goa
 - local SEO agency Goa
@@ -141,20 +149,20 @@ Target URL: `/local-seo-goa/`
 
 ## Recommended page ownership
 
-| Target URL | Primary keyword | Supporting intent | Priority |
-|---|---|---|---|
-| `/` | website design company in Goa | company, agency, designers, best/top, custom, responsive | P0 |
-| `/website-development-goa/` | website development company in Goa | developers, custom development, web applications | P0 |
-| `/ecommerce-website-development-goa/` | ecommerce website development company in Goa | Shopify, WooCommerce, stores, payment integration | P0 |
-| `/local-seo-goa/` | local SEO services in Goa | SEO company, Maps visibility, local business SEO | P0 |
-| `/google-business-profile-optimization-goa/` | Google Business Profile optimization Goa | GBP management, Maps ranking, legacy GMB phrasing | P1 |
-| `/website-redesign-goa/` | website redesign company in Goa | revamp, migration, responsive redesign | P1 |
-| `/website-maintenance-goa/` | website maintenance services in Goa | AMC, support, backups, security | P1 |
-| `/wordpress-website-design-goa/` | WordPress website design company in Goa | WordPress developer, WooCommerce | P1, conditional on real capability |
-| `/website-design-cost-goa/` | website design cost in Goa | prices, packages, charges | P1 |
-| `/ui-ux-design-goa/` | UI UX design agency in Goa | UX audit, Figma, product design | P2 |
-| `/website-speed-optimization-goa/` | website speed optimization Goa | Core Web Vitals, performance audit | P2 |
-| `/landing-page-design-goa/` | landing page design company Goa | lead generation and paid campaigns | P2 |
+| Site owner | Target URL | Primary keyword | Supporting intent | Priority |
+|---|---|---|---|---|
+| Goa specialist | `/` | website design company in Goa | company, agency, designers, best/top, custom, responsive | P0 |
+| Goa specialist | `/website-development-goa/` | website development company in Goa | developers, custom development, web applications | P0 |
+| Goa specialist | `/ecommerce-website-development-goa/` | ecommerce website development company in Goa | Shopify, WooCommerce, stores, payment integration | P0 |
+| Sanctify | `/sanctify-facility/local-seo-services-goa/` | local SEO services in Goa | SEO company, Maps visibility, local business SEO | P0 |
+| Sanctify | `/local-seo-google-business-profile-goa/` | Google Business Profile optimization Goa | GBP management, Maps visibility, Local SEO guidance | P1 |
+| Goa specialist | `/website-redesign-goa/` | website redesign company in Goa | revamp, migration, responsive redesign | P1 |
+| Goa specialist | `/website-maintenance-goa/` | website maintenance services in Goa | AMC, support, backups, security | P1 |
+| Goa specialist | `/wordpress-website-design-goa/` | WordPress website design company in Goa | WordPress developer, WooCommerce | P1, conditional on real capability |
+| Goa specialist | `/website-design-cost-goa/` | website design cost in Goa | prices, packages, charges | P1 |
+| Goa specialist | `/ui-ux-design-goa/` | UI UX design agency in Goa | UX audit, Figma, product design | P2 |
+| Goa specialist | `/website-speed-optimization-goa/` | website speed optimization Goa | Core Web Vitals, performance audit | P2 |
+| Goa specialist | `/landing-page-design-goa/` | landing page design company Goa | lead generation and paid campaigns | P2 |
 
 All pricing, package, charge, affordability, low-cost, “cheap,” “how much,” and cost-factor queries consolidate under `/website-design-cost-goa/`. It should combine transparent commercial ranges with educational scope factors; a second Goa website-cost guide is intentionally excluded to prevent cannibalization.
 
@@ -213,6 +221,8 @@ The locality matrix is a keyword-research inventory, **not** permission to publi
 
 ### Google Business Profile workstream
 
+Sanctify retains the single Google Business Profile for the real business. Do not create another profile merely for `webdesigncompanygoa.in`, and do not present the specialist as a separate local entity unless independently verified business facts prove it is genuinely distinct. The specialist can reference Sanctify as provider; GBP, NAP, citations, Maps, and Local SEO service ownership remain on Sanctify.
+
 Google’s own guidance emphasizes complete and accurate business information for local visibility. The local campaign should therefore include:
 
 1. Confirm the exact real-world business name; do not add keywords to the name unless they are legally and consistently part of it.
@@ -264,14 +274,13 @@ Practical differentiation should come from evidence, not a longer list of generi
 
 ### Phase 1: establish commercial authority
 
-1. Resolve crawl/access issues and publish the core site foundation.
-2. Homepage.
-3. Website development.
-4. Ecommerce development.
-5. Local SEO.
-6. GBP optimization.
-7. Redesign, maintenance, and pricing pages.
-8. Portfolio/project pages, About, Contact, privacy/terms, and trust assets.
+1. Resolve specialist crawl/access issues and publish the core site foundation.
+2. Specialist homepage.
+3. Specialist website development and ecommerce development pages.
+4. Improve Sanctify’s existing Local SEO and GBP/Maps owners; do not recreate them on the specialist.
+5. Specialist redesign, maintenance, and pricing pages.
+6. Portfolio/project pages, relationship disclosure, About context, contact route, privacy/terms, and trust assets.
+7. Move approved overlapping Sanctify web-design URLs in controlled batches using the migration map.
 
 ### Phase 2: build high-fit Goa vertical authority
 
@@ -279,13 +288,13 @@ Start with hotels/resorts, restaurants, travel/tours, real estate, and destinati
 
 ### Phase 3: capture evaluation and problem-aware searches
 
-Publish decision guides on selecting an agency, Local SEO, Google Maps, redesign, platform choice, and hotel direct bookings. Pricing and cost intent belongs to the single Phase 1 commercial guide at `/website-design-cost-goa/`.
+Publish specialist decision guides on selecting a web-design agency, redesign, platform choice, conversion, and hotel direct bookings. Local SEO and Google Maps guidance stays on Sanctify’s existing canonical guide. Website pricing and cost intent belongs to the single specialist Phase 1 commercial guide at `/website-design-cost-goa/`.
 
 ### Phase 4: expand local coverage carefully
 
 Build North Goa and South Goa regional hubs first. Publish town pages only where Search Console, GBP data, lead geography, or real local proof justifies them.
 
-The exact 29-page queue, prerequisites, and conversion goals are in `content-roadmap.csv`.
+The exact 29-item queue, prerequisites, canonical owner, and conversion goals are in `content-roadmap.csv`. Items mapped to Sanctify are existing-page improvements or consolidations, not specialist-domain page proposals.
 
 ## Internal linking rules
 
@@ -295,13 +304,15 @@ The exact 29-page queue, prerequisites, and conversion goals are in `content-roa
 - Guides link contextually to one primary commercial page and supporting proof.
 - Regional pages link to relevant services and only to town pages that meet the quality gate.
 - Use descriptive anchors naturally; do not repeat one exact-match anchor sitewide.
+- Keep cross-domain links sparse, contextual, and transparent: branded attribution and genuinely useful service/resource links only.
+- Do not build reciprocal exact-match footer blocks or link every page on one domain to the other.
 - Breadcrumbs should reflect the actual hierarchy.
 
 ## Measurement and validation plan
 
 Before treating the inventory as final, add real data:
 
-1. Google Search Console query/page exports after the site is accessible and collecting impressions.
+1. Separate Google Search Console query/page exports for Sanctify and the specialist after each is accessible and collecting impressions.
 2. Google Ads Keyword Planner for India, with Goa location targeting where supported.
 3. GBP Performance search terms and conversion actions.
 4. Lead source, service requested, and locality from CRM/enquiry forms.
@@ -328,7 +339,9 @@ Report by cluster and landing page, not only by individual keyword:
 - `search_intent`: transactional, commercial investigation, or informational-commercial.
 - `funnel_stage`: awareness, consideration, or decision.
 - `location_modifier`: Goa or broader natural context.
-- `target_url`: proposed canonical owner.
+- `target_url`: root-relative proposed canonical owner path; interpret it using `site_owner`.
+- `site_owner`: `goa_specialist` or `sanctify`; the only host allowed to own the row.
+- `canonical_url`: generated absolute URL whose host must match `site_owner`.
 - `page_type`: homepage, service page, industry page, guide, or commercial guide.
 - `keyword_role`: primary, close variant, secondary, or support.
 - `priority`: P0–P2.
@@ -342,10 +355,24 @@ Report by cluster and landing page, not only by individual keyword:
 
 - `locality` and `region`: normalized Goa geography.
 - `service_cluster`: web design, development, Local SEO, or another local service.
-- `target_url`: proposed owner, not an automatic publishing instruction.
+- `target_url`: root-relative proposed owner path, not an automatic publishing instruction.
+- `site_owner` and `canonical_url`: explicit host ownership; Local SEO/GBP rows can point to Sanctify while web-design rows point to the specialist.
 - `page_strategy`: homepage, statewide service page, regional hub, conditional local page, alias, or GBP/service optimization.
 - `priority`: P0/P1/P2 or P3 validation.
 - `status`: requires local volume, GSC, GBP, lead, or proof validation.
+
+### `content-roadmap.csv`
+
+- `site_owner`, `target_url`, and `canonical_url`: define one concrete page owner. Duplicate nonblank roadmap canonicals are rejected.
+- `canonical_template`: used only for the deferred, non-publishable locality research template; its `canonical_url` is intentionally blank.
+- `status`: distinguishes planned/conditional builds from existing Sanctify page review and deferred locality research.
+
+### `sanctify-web-design-migration-map.csv`
+
+- `migration_id`: stable row identifier for evidence and approval.
+- `target_owner` and `target_path`: use the same owner/path contract as the generated inventories; unresolved audits leave the path blank.
+- `canonical_url`: derived absolute destination and required to match a concrete roadmap owner.
+- `redirect_ready`: the only execution gate. It remains `false` until equivalence approval, destination `200`, indexability, self-canonical, and approved-for-cutover status are recorded.
 
 ## Sources and limitations
 
