@@ -426,10 +426,11 @@ details p { max-width: 68ch; margin: 0; padding: 0 60px 28px 0; color: var(--mut
   .hero-grid { grid-template-columns: 1fr; gap: 20px; }
   .hero-copy { padding: 0; }
   .hero-copy h1, .hero-copy .lede { max-width: 680px; }
-  .hero-visual { min-height: 590px; }
-  .hero-image-wrap { inset: 0 -8% -8% 4%; mask-image: linear-gradient(90deg, transparent 0, #000 12%, #000 100%); }
-  .analytics-card--research { top: 9%; right: 2%; }
-  .analytics-card--score { left: 3%; bottom: 7%; }
+  .hero-visual { min-height: 520px; }
+  .hero-image-wrap { inset: 0 -4% -4% -2%; border-radius: 20px; mask-image: none; }
+  .hero-image-wrap img { object-position: 72% center; }
+  .analytics-card--research { top: 6%; right: 1%; }
+  .analytics-card--score { left: 1%; bottom: 5%; }
   .hero-scroll { display: none; }
   .split, .service-layout, .faq-layout, .process-layout, .collaboration-card { grid-template-columns: 1fr; }
   .split--reverse > :first-child { order: initial; }
@@ -466,11 +467,12 @@ details p { max-width: 68ch; margin: 0; padding: 0 60px 28px 0; color: var(--mut
   .hero-contact { align-items: stretch; flex-direction: column; padding: 14px; }
   .hero-contact > span { padding: 2px 4px; white-space: normal; }
   .hero-contact .button { width: 100%; }
-  .hero-visual { min-height: 470px; margin-top: 10px; }
-  .hero-image-wrap { inset: 0 -18% -5% -6%; border-radius: 42% 0 0 32%; }
+  .hero-visual { min-height: 440px; margin-top: 10px; }
+  .hero-image-wrap { inset: 0 -2% -3% -2%; border-radius: 18px; }
+  .hero-image-wrap img { object-position: 76% center; }
   .analytics-card { padding: 13px; }
-  .analytics-card--research { width: 180px; top: 3%; right: -2%; }
-  .analytics-card--score { width: 165px; left: -1%; bottom: 2%; }
+  .analytics-card--research { width: 180px; top: 4%; right: 1%; }
+  .analytics-card--score { width: 165px; left: 1%; bottom: 3%; }
   .research-bars { height: 40px; }
   .score-ring { width: 48px; height: 48px; }
   .score-ring span { left: 20px; top: 20px; }
@@ -509,10 +511,11 @@ details p { max-width: 68ch; margin: 0; padding: 0 60px 28px 0; color: var(--mut
   .brand-copy strong { font-size: 13px; }
   .brand-copy small { font-size: 8px; }
   .hero--rankify { padding-bottom: 48px; }
-  .hero-visual { min-height: 390px; }
-  .hero-image-wrap { inset: 1% -34% -4% -22%; object-position: 67% center; }
-  .analytics-card--research { width: 158px; right: -4%; }
-  .analytics-card--score { width: 146px; }
+  .hero-visual { min-height: 384px; }
+  .hero-image-wrap { inset: 0; border-radius: 16px; }
+  .hero-image-wrap img { object-position: 80% center; }
+  .analytics-card--research { width: 150px; right: 2%; }
+  .analytics-card--score { width: 142px; left: 2%; }
   .analytics-card__head { font-size: 11px; }
   .analytics-card p { margin-top: 6px; font-size: 9px; line-height: 1.2; }
   .about-visual { min-height: 390px; }
