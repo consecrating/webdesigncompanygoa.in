@@ -75,13 +75,16 @@ class Page:
     faqs: tuple[Faq, ...] = ()
     indexable: bool = True
     hero_image: bool = False
+    article_date: str | None = None
+    article_image: str | None = None
+    content_html: str | None = None
 
     @property
     def url(self) -> str:
         return f"{BASE_URL}{self.route}"
 
 
-PAGES: Final[tuple[Page, ...]] = (
+_CORE_PAGES: Final[tuple[Page, ...]] = (
     Page(
         route="/",
         fragment="home.html",
@@ -267,6 +270,260 @@ PAGES: Final[tuple[Page, ...]] = (
         indexable=False,
     ),
 )
+
+
+@dataclass(frozen=True)
+class Post:
+    slug: str
+    title: str
+    description: str
+    label: str
+    image_stem: str
+    image_alt: str
+    excerpt: str
+    faqs: tuple[Faq, ...]
+
+
+POST_DATE_ISO: Final[str] = "2026-08-30"
+POSTS_PER_PAGE: Final[int] = 6
+
+POSTS: Final[tuple[Post, ...]] = (
+    Post(
+        "how-to-choose-web-design-company-goa",
+        "How to Choose a Web Design Company in Goa: A Guide",
+        "A practical guide to choosing a web design company in Goa, covering scope, process, proof, ownership and the questions that reveal a good long-term fit.",
+        "How to choose a web design company in Goa",
+        "client-conversation-goa",
+        "Indian business owner and a web strategist reviewing a website plan in Goa",
+        "The questions and signals that separate a good long-term web design partner from a long feature list.",
+        (
+            Faq("What should I ask a web design company in Goa?", "Ask about their process, who writes content, what you own after launch, how they handle responsive design and speed, and how support works once the site is live."),
+            Faq("Do I need a local Goa web designer?", "Local context helps, but proof, process and communication matter more than location. Many Goa businesses are served well by teams that understand the market and respond clearly."),
+        ),
+    ),
+    Post(
+        "signs-your-website-needs-redesign-goa",
+        "Signs Your Business Website in Goa Needs a Redesign",
+        "Learn the clear signs a Goa business website needs a redesign, from poor mobile use and slow speed to weak structure, and how to plan the fix without losing value.",
+        "Signs your website needs a redesign",
+        "goa-local-business-owner",
+        "Indian business owner reviewing a website that needs a redesign in Goa",
+        "Practical signs your website is working against you, and how to plan a redesign that keeps what already works.",
+        (
+            Faq("How do I know if my website needs a redesign?", "Common signs are a site that is hard to use on phones, slow loading, unclear structure, outdated content and a design that no longer matches how the business works."),
+            Faq("Will a redesign hurt my search rankings?", "A careful redesign protects valuable pages and uses redirects when addresses change, so it aims to preserve search value rather than lose it."),
+        ),
+    ),
+    Post(
+        "website-design-cost-factors-goa",
+        "What Really Affects Website Design Cost in Goa",
+        "Understand the real factors behind website design cost in Goa, including pages, content, features, design depth and maintenance, so you can brief and budget clearly.",
+        "What affects website design cost in Goa",
+        "final-cta-goa-creative-team",
+        "Indian web design team planning a website project in a Goa studio",
+        "Why website quotes vary so much, and the scope decisions that move the number up or down.",
+        (
+            Faq("Why can two Goa websites cost very different amounts?", "Because cost follows scope. Page count, content, features like booking or payments, design depth and ongoing support all change the work involved."),
+            Faq("How do I keep website cost predictable?", "Prepare a clear brief, decide what content you will provide, and separate must-have features from later phases so the scope stays defined."),
+        ),
+    ),
+    Post(
+        "website-or-ecommerce-store-goa",
+        "Website or Ecommerce Store: What a Goa Business Needs",
+        "Decide between a standard website and an ecommerce store for your Goa business by matching goals, catalogue, checkout and operations to the right build and platform.",
+        "Website or ecommerce store for a Goa business",
+        "portfolio-device-showcase",
+        "Website and store layouts shown across laptop, tablet and phone",
+        "How to decide between a standard website and an online store, based on how your business actually earns.",
+        (
+            Faq("Do I need an ecommerce store or a normal website?", "If selling online is central now, an ecommerce build fits. If you mainly explain services and collect enquiries, a standard website with a clear contact path may be enough."),
+            Faq("Can a website add ecommerce later?", "Yes, if it is planned for. Discussing likely future selling during discovery makes adding a store later much easier and cheaper."),
+        ),
+    ),
+    Post(
+        "goa-hotel-website-direct-bookings",
+        "How Goa Hotels Can Win More Direct Website Bookings",
+        "How Goa hotels and resorts can reduce OTA dependence and earn more direct bookings through faster, clearer, mobile-first websites built around the booking decision.",
+        "How Goa hotels win direct bookings",
+        "hero-goa-web-design-studio",
+        "Designer reviewing a Goa hotel website layout on a large screen",
+        "Practical ways a hotel website can reduce commission costs by earning more direct bookings.",
+        (
+            Faq("How can a Goa hotel get more direct bookings?", "Make the site fast and mobile-first, show rooms and offers clearly, reduce steps to enquire or book, and keep booking information easy to find on every page."),
+            Faq("Should a hotel website replace OTAs?", "Not replace, but balance. A strong direct-booking site reduces dependence on OTAs and their commissions while OTAs still add reach."),
+        ),
+    ),
+    Post(
+        "goa-restaurant-website-guide",
+        "Restaurant Websites in Goa: Menus, Bookings and Orders",
+        "A guide to restaurant, cafe and beach shack websites in Goa, covering mobile menus, reservations, WhatsApp ordering, directions and reviews that drive real visits.",
+        "Restaurant websites in Goa",
+        "client-conversation-goa",
+        "Restaurant owner in Goa reviewing a mobile website menu on a tablet",
+        "What a restaurant, cafe or beach shack website in Goa needs to turn a hungry browser into a visit.",
+        (
+            Faq("What should a Goa restaurant website include?", "A fast mobile menu, location and directions, opening hours, a way to reserve or message on WhatsApp, and clear photos, all easy to reach on a phone."),
+            Faq("Is a website worth it if I use social media?", "Yes. Social media helps discovery, but a website gives you a stable, searchable home for your menu, hours and bookings that you fully control."),
+        ),
+    ),
+    Post(
+        "wordpress-or-custom-website-goa",
+        "WordPress or Custom Build for Your Goa Website?",
+        "Compare WordPress and custom development for a Goa business website, weighing editing, features, speed, security and maintenance before you commit to a platform.",
+        "WordPress or custom build for your Goa website",
+        "services-responsive-design-workspace",
+        "Designers comparing WordPress and custom website layouts in a Goa studio",
+        "How to choose between WordPress and a custom build without following hype in either direction.",
+        (
+            Faq("Is WordPress good for a Goa business website?", "WordPress suits many content-led sites because it is editable and flexible, but the right choice depends on your features, editing needs, speed goals and maintenance plan."),
+            Faq("When is a custom build better than WordPress?", "Custom development can be better when requirements are specific, performance is critical, or a standard platform would need heavy workarounds to fit the business."),
+        ),
+    ),
+    Post(
+        "website-speed-core-web-vitals-goa",
+        "Website Speed and Core Web Vitals for Goa Businesses",
+        "Why website speed and Core Web Vitals matter for Goa businesses, what slows sites down, and how measured performance work keeps visitors from leaving before they act.",
+        "Website speed and Core Web Vitals in Goa",
+        "portfolio-device-showcase",
+        "A website measured for speed across desktop, tablet and phone",
+        "Why speed decides whether visitors stay, and how measured performance work actually helps.",
+        (
+            Faq("Why does website speed matter for a Goa business?", "Many visitors browse on mobile data. A slow site loses people before they read anything, so speed directly affects enquiries and sales."),
+            Faq("What are Core Web Vitals?", "They are Google metrics for loading, interactivity and visual stability that reflect how fast and steady a page feels to a real visitor."),
+        ),
+    ),
+    Post(
+        "mobile-first-accessible-websites-goa",
+        "Mobile-First, Accessible Websites for Goa Businesses",
+        "Why mobile-first and accessible design matter for Goa businesses, and how clear structure, readable type and fast pages help more visitors understand and choose you.",
+        "Mobile-first, accessible websites in Goa",
+        "process-indian-design-team",
+        "Indian design team planning a mobile-first, accessible website in Goa",
+        "Why designing for phones and accessibility first produces a clearer site for everyone.",
+        (
+            Faq("What does mobile-first design mean?", "It means designing for small screens first, so the most important content and actions work well on phones, then expanding the layout for larger screens."),
+            Faq("Why does accessibility help my business?", "Accessible sites are easier for everyone to read and use, reach more people, and tend to be clearer and better structured, which also helps search engines."),
+        ),
+    ),
+)
+
+
+def _blog_index_meta(page_number: int) -> tuple[str, str, str, str]:
+    """Return (route, title, description, label) for a blog index page."""
+    if page_number == 1:
+        return (
+            "/blog/",
+            "Web Design Insights and Guides for Goa Businesses",
+            "Practical web design, development and ecommerce guides for businesses serving Goa, covering planning, redesign, platforms, speed and industry-specific websites.",
+            "Blog",
+        )
+    return (
+        f"/blog/page/{page_number}/",
+        f"Web Design Guides for Goa Businesses | Page {page_number}",
+        "More web design, development and ecommerce guides for businesses serving Goa, covering platforms, speed, accessibility and industry-specific website decisions.",
+        f"Blog page {page_number}",
+    )
+
+
+def _post_card_html(post: Post) -> str:
+    href = f"/blog/{post.slug}/"
+    stem = post.image_stem
+    srcset = f"/assets/images/{stem}-720.webp 720w, /assets/images/{stem}-1376.webp 1376w"
+    return (
+        '<article class="blog-card">'
+        f'<a class="blog-card__media" href="{href}" tabindex="-1" aria-hidden="true">'
+        f'<img src="/assets/images/{stem}-1376.webp" srcset="{srcset}" '
+        'sizes="(max-width: 767px) calc(100vw - 28px), (max-width: 1199px) 45vw, 380px" '
+        f'alt="{html.escape(post.image_alt, quote=True)}" width="1376" height="768" loading="lazy" decoding="async">'
+        '</a>'
+        '<div class="blog-card__body">'
+        '<p class="blog-card__tag">Web design guide</p>'
+        f'<h3><a href="{href}">{html.escape(post.title)}</a></h3>'
+        f'<p>{html.escape(post.excerpt)}</p>'
+        f'<a class="text-link" href="{href}">Read the guide <span class="arrow-icon" aria-hidden="true"></span></a>'
+        '</div>'
+        '</article>'
+    )
+
+
+def _pagination_html(current: int, total: int) -> str:
+    if total <= 1:
+        return ""
+    parts: list[str] = ['<nav class="pagination" aria-label="Blog pages">']
+    if current > 1:
+        prev_route = "/blog/" if current - 1 == 1 else f"/blog/page/{current - 1}/"
+        parts.append(f'<a class="pagination__step" href="{prev_route}" rel="prev">Previous</a>')
+    for number in range(1, total + 1):
+        route = "/blog/" if number == 1 else f"/blog/page/{number}/"
+        if number == current:
+            parts.append(f'<span aria-current="page">{number}</span>')
+        else:
+            parts.append(f'<a href="{route}">{number}</a>')
+    if current < total:
+        next_route = f"/blog/page/{current + 1}/"
+        parts.append(f'<a class="pagination__step" href="{next_route}" rel="next">Next</a>')
+    parts.append("</nav>")
+    return "".join(parts)
+
+
+def _blog_index_content(page_number: int, total_pages: int, heading: str) -> str:
+    start = (page_number - 1) * POSTS_PER_PAGE
+    page_posts = POSTS[start : start + POSTS_PER_PAGE]
+    cards = "".join(_post_card_html(post) for post in page_posts)
+    intro = (
+        "Clear, practical guides on planning, building and improving websites for businesses "
+        "that serve customers across Goa. No filler, just useful decisions."
+    )
+    return (
+        '<section class="section blog-index" data-reveal>'
+        '<div class="container">'
+        '<div class="section-heading">'
+        '<p class="kicker"><span></span>Web design guides</p>'
+        f'<h1>{html.escape(heading)}</h1>'
+        f'<p class="lede">{html.escape(intro)}</p>'
+        '</div>'
+        f'<div class="blog-grid">{cards}</div>'
+        f'{_pagination_html(page_number, total_pages)}'
+        '</div>'
+        '</section>'
+    )
+
+
+def _build_blog_pages() -> tuple[Page, ...]:
+    total_pages = (len(POSTS) + POSTS_PER_PAGE - 1) // POSTS_PER_PAGE
+    pages: list[Page] = []
+    for number in range(1, total_pages + 1):
+        route, title, description, label = _blog_index_meta(number)
+        heading = "Web Design Insights and Guides for Goa Businesses"
+        pages.append(
+            Page(
+                route=route,
+                fragment="",
+                title=title,
+                description=description,
+                label=label,
+                schema_type="Blog",
+                content_html=_blog_index_content(number, total_pages, heading),
+            )
+        )
+    for post in POSTS:
+        pages.append(
+            Page(
+                route=f"/blog/{post.slug}/",
+                fragment=f"blog/{post.slug}.html",
+                title=post.title,
+                description=post.description,
+                label=post.label,
+                schema_type="BlogPosting",
+                faqs=post.faqs,
+                article_date=POST_DATE_ISO,
+                article_image=post.image_stem,
+            )
+        )
+    return tuple(pages)
+
+
+PAGES: Final[tuple[Page, ...]] = _CORE_PAGES + _build_blog_pages()
 
 
 class AuditParser(HTMLParser):
@@ -637,6 +894,14 @@ def schema_for(page: Page) -> str:
         "inLanguage": "en-IN",
         "isPartOf": {"@id": f"{BASE_URL}/#website"},
     }
+    if page.article_date is not None:
+        page_node["headline"] = page.title
+        page_node["datePublished"] = page.article_date
+        page_node["dateModified"] = page.article_date
+        page_node["author"] = {"@type": "Organization", "name": "Sanctify"}
+        page_node["publisher"] = {"@type": "Organization", "name": "Sanctify"}
+        if page.article_image is not None:
+            page_node["image"] = f"{BASE_URL}/assets/images/{page.article_image}-1376.webp"
     graph: list[dict[str, object]] = [page_node]
     if page.route == "/":
         graph.insert(
@@ -681,7 +946,10 @@ def schema_for(page: Page) -> str:
 
 
 def render_page(page: Page, *, template: str, css_file: str, js_file: str) -> str:
-    fragment = (SRC / "pages" / page.fragment).read_text(encoding="utf-8")
+    if page.content_html is not None:
+        fragment = page.content_html
+    else:
+        fragment = (SRC / "pages" / page.fragment).read_text(encoding="utf-8")
     image_url = f"{BASE_URL}/assets/images/social-preview.jpg"
     replacements: Mapping[str, str] = {
         "{{TITLE}}": escaped(page.title),
