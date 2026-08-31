@@ -144,8 +144,11 @@ details p { max-width: 68ch; margin: 0; padding: 0 48px 26px 0; color: var(--mut
 
 .site-footer { padding: 72px 0 26px; background: #e8eeeb; border-top: 1px solid var(--line); }
 .footer-grid, .footer-base { width: var(--container); margin-inline: auto; }
-.footer-grid { display: grid; grid-template-columns: 1.6fr 0.8fr 0.7fr; gap: 50px; }
+.footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 44px; }
 .footer-grid p { max-width: 48ch; color: var(--muted); font-size: 14px; }
+.footer-contact { margin-top: 14px; }
+.footer-contact a { color: var(--accent-dark); font-weight: 750; text-decoration: none; }
+.footer-contact a:hover { text-decoration: underline; }
 .footer-grid nav { display: grid; align-content: start; gap: 11px; font-size: 14px; }
 .footer-grid nav a { min-height: 44px; display: inline-flex; align-items: center; }
 .brand--footer { font-size: 17px; }
@@ -158,6 +161,7 @@ details p { max-width: 68ch; margin: 0; padding: 0 48px 26px 0; color: var(--mut
 
 @media (max-width: 900px) {
   .hero-grid, .split, .cta-panel { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
   .hero { min-height: auto; }
   .hero-media { max-width: 720px; transform: none; }
   .process-grid { grid-template-columns: repeat(2, 1fr); }
