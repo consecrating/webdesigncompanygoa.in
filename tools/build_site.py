@@ -83,6 +83,7 @@ class Page:
     article_date: str | None = None
     article_image: str | None = None
     content_html: str | None = None
+    matrix: bool = False
 
     @property
     def url(self) -> str:
@@ -606,7 +607,280 @@ def _build_blog_pages() -> tuple[Page, ...]:
     return tuple(pages)
 
 
-PAGES: Final[tuple[Page, ...]] = _CORE_PAGES + _build_blog_pages()
+@dataclass(frozen=True)
+class Area:
+    slug: str
+    name: str
+    kind: str  # "town" or "region"
+    blurb: str
+
+
+MATRIX_AREAS: Final[tuple[Area, ...]] = (
+    Area("panaji", "Panaji", "town", "Panaji, the state capital, blends heritage charm with government, hospitality and retail businesses."),
+    Area("porvorim", "Porvorim", "town", "Porvorim is a fast-growing residential and business belt just north of Panaji."),
+    Area("mapusa", "Mapusa", "town", "Mapusa is North Goa's busy market town and a commercial hub for the northern belt."),
+    Area("calangute", "Calangute", "town", "Calangute is one of North Goa's busiest beach and tourism centres."),
+    Area("candolim", "Candolim", "town", "Candolim serves a steady flow of hospitality, dining and retail visitors."),
+    Area("baga", "Baga", "town", "Baga is a nightlife and beach hotspot with strong hospitality and events demand."),
+    Area("anjuna", "Anjuna", "town", "Anjuna is known for its markets, cafes and creative, tourism-led businesses."),
+    Area("vagator", "Vagator", "town", "Vagator draws a beach and events crowd through much of the season."),
+    Area("morjim", "Morjim", "town", "Morjim serves a quieter coastal and wellness-oriented visitor base."),
+    Area("siolim", "Siolim", "town", "Siolim is a growing hospitality and villa belt in North Goa."),
+    Area("assagao", "Assagao", "town", "Assagao is a premium hospitality, dining and lifestyle pocket."),
+    Area("sinquerim", "Sinquerim", "town", "Sinquerim anchors an upscale beach and resort stretch in North Goa."),
+    Area("margao", "Margao", "town", "Margao is South Goa's commercial capital and main business centre."),
+    Area("vasco-da-gama", "Vasco da Gama", "town", "Vasco da Gama, near the airport and port, is home to the Sanctify studio in Zuarinagar."),
+    Area("colva", "Colva", "town", "Colva is a leading South Goa beach and hospitality destination."),
+    Area("benaulim", "Benaulim", "town", "Benaulim serves resorts, villas and hospitality along the south coast."),
+    Area("palolem", "Palolem", "town", "Palolem is a popular South Goa beach town with tourism-led businesses."),
+    Area("ponda", "Ponda", "town", "Ponda is a central commercial and temple town serving inland Goa."),
+    Area("varca", "Varca", "town", "Varca is a resort and villa belt on the south coast."),
+    Area("cavelossim", "Cavelossim", "town", "Cavelossim is a premium south-coast resort and hospitality area."),
+    Area("north-goa", "North Goa", "region", "North Goa covers the busy coastal belt from Panaji up to the northern beaches."),
+    Area("south-goa", "South Goa", "region", "South Goa covers Margao, Vasco and the quieter southern coast."),
+)
+
+MATRIX_SERVICES: Final[tuple[tuple[str, str, str], ...]] = (
+    ("website-design", "Website Design", "/website-development-goa/"),
+    ("website-development", "Website Development", "/website-development-goa/"),
+    ("ecommerce-website-development", "Ecommerce Website Development", "/ecommerce-website-development-goa/"),
+    ("website-redesign", "Website Redesign", "/website-redesign-goa/"),
+    ("website-maintenance", "Website Maintenance", "/website-maintenance-goa/"),
+    ("wordpress-website-design", "WordPress Website Design", "/wordpress-website-design-goa/"),
+    ("ui-ux-design", "UI UX Design", "/ui-ux-design-goa/"),
+    ("website-speed-optimization", "Website Speed Optimization", "/website-speed-optimization-goa/"),
+    ("landing-page-design", "Landing Page Design", "/landing-page-design-goa/"),
+)
+
+MATRIX_INDUSTRIES: Final[tuple[tuple[str, str, str], ...]] = (
+    ("hotel", "Hotel", "/industries/hotel-website-design-goa/"),
+    ("resort", "Resort", "/industries/resort-website-design-goa/"),
+    ("restaurant", "Restaurant", "/industries/restaurant-website-design-goa/"),
+    ("travel-and-tours", "Travel and Tour", "/industries/travel-and-tours-website-design-goa/"),
+    ("real-estate", "Real Estate", "/industries/real-estate-website-design-goa/"),
+    ("wedding", "Wedding", "/industries/wedding-website-design-goa/"),
+    ("cafe-bar", "Cafe and Bar", ""),
+    ("spa-wellness", "Spa and Wellness", ""),
+    ("fitness-yoga", "Fitness and Yoga", ""),
+    ("clinic-healthcare", "Clinic and Healthcare", ""),
+    ("retail-boutique", "Retail and Boutique", ""),
+    ("professional-services", "Professional Services", ""),
+)
+
+_WA_HREF: Final[str] = "https://wa.me/919923352923?text=Hi%2C%20I%20would%20like%20to%20enquire%20about%20a%20website."
+
+
+def _clamp(text: str, lo: int, hi: int, pad: str) -> str:
+    text = " ".join(text.split())
+    while len(text) < lo:
+        text = " ".join(f"{text}{pad}".split())
+    if len(text) > hi:
+        cut = text[:hi]
+        space = cut.rfind(" ")
+        if space >= lo:
+            cut = cut[:space]
+        text = cut.strip(" ,.|")
+        while len(text) < lo:
+            text = " ".join(f"{text}{pad}".split())
+    return text
+
+
+def _matrix_image(stem: str, alt: str) -> str:
+    return (
+        '<figure class="media-frame"><img '
+        f'src="/assets/images/{stem}-1376.webp" '
+        f'srcset="/assets/images/{stem}-720.webp 720w, /assets/images/{stem}-1376.webp 1376w" '
+        'sizes="(max-width: 767px) calc(100vw - 28px), 620px" '
+        f'alt="{html.escape(alt)}" width="1376" height="768" loading="lazy" decoding="async"></figure>'
+    )
+
+
+def _matrix_faq_html(faqs: tuple[Faq, ...]) -> str:
+    items = "".join(
+        f"<details><summary>{html.escape(f.question)}</summary><p>{html.escape(f.answer)}</p></details>"
+        for f in faqs
+    )
+    return f'<div class="faq-list">{items}</div>'
+
+
+def _rel_button(href: str, label: str, *, secondary: bool = False) -> str:
+    cls = "button button--secondary" if secondary else "button"
+    return f'<a class="{cls}" href="{href}">{html.escape(label)}</a>'
+
+
+def _matrix_body(*, kicker: str, h1: str, lede: str, intro_html: str, faqs: tuple[Faq, ...], image_stem: str, image_alt: str, related: str) -> str:
+    return (
+        '<header class="page-hero"><div class="container">'
+        f'<p class="kicker"><span></span>{html.escape(kicker)}</p>'
+        f'<h1>{html.escape(h1)}</h1>'
+        f'<p class="lede">{html.escape(lede)}</p>'
+        '<div class="button-row">'
+        f'<a class="button button--whatsapp" href="{_WA_HREF}" target="_blank" rel="noopener">Message on WhatsApp</a>'
+        '<a class="button button--secondary" href="/contact/">Start an enquiry</a>'
+        '</div></div></header>'
+        '<section class="section section--surface" data-reveal><div class="container split">'
+        f'<div>{intro_html}</div>{_matrix_image(image_stem, image_alt)}'
+        '</div></section>'
+        '<section class="section" data-reveal><div class="narrow">'
+        '<div class="section-heading"><h2>Common questions</h2></div>'
+        f'{_matrix_faq_html(faqs)}'
+        f'<div class="button-row">{related}</div>'
+        '</div></section>'
+    )
+
+
+def _build_matrix_pages() -> tuple[Page, ...]:
+    pages: list[Page] = []
+    rotate = 0
+
+    def next_stem() -> str:
+        nonlocal rotate
+        stem = IMAGE_STEMS[rotate % len(IMAGE_STEMS)]
+        rotate += 1
+        return stem
+
+    def full_name(area: Area) -> str:
+        return f"{area.name}, Goa" if area.kind == "town" else area.name
+
+    area_links = "".join(
+        f'<li><a href="/locations/{a.slug}/">Web design in {html.escape(a.name)}</a></li>'
+        for a in MATRIX_AREAS
+    )
+    pages.append(Page(
+        route="/locations/", fragment="",
+        title=_clamp("Web Design Services Across Goa Locations", 30, 70, " by Sanctify"),
+        description=_clamp("Explore web design and development by area across Goa, from Panaji and Mapusa to Margao, Vasco and the North and South Goa coastal belts, all by Sanctify.", 110, 175, " Serving businesses across Goa."),
+        label="Goa locations", schema_type="CollectionPage", matrix=True,
+        content_html=(
+            '<header class="page-hero"><div class="container">'
+            '<p class="kicker"><span></span>Areas we serve</p>'
+            '<h1>Web Design Across Goa</h1>'
+            '<p class="lede">Sanctify serves businesses across Goa from its studio in Vasco-da-Gama. Choose an area to see local web design and development.</p>'
+            '</div></header>'
+            '<section class="section section--surface" data-reveal><div class="container">'
+            '<div class="section-heading"><h2>Goa areas</h2></div>'
+            f'<ul class="link-columns">{area_links}</ul>'
+            '</div></section>'
+        ),
+    ))
+
+    industry_links = "".join(
+        f'<li><a href="{parent or f"/industries/{islug}-website-design-in-panaji/"}">{html.escape(iname)} website design</a></li>'
+        for islug, iname, parent in MATRIX_INDUSTRIES
+    )
+    pages.append(Page(
+        route="/industries/", fragment="",
+        title=_clamp("Web Design for Goa Industries and Sectors", 30, 70, " by Sanctify"),
+        description=_clamp("Web design and development tailored to Goa industries, from hotels, resorts and restaurants to real estate, weddings, wellness, retail and professional services.", 110, 175, " Built for Goa businesses."),
+        label="Industries", schema_type="CollectionPage", matrix=True,
+        content_html=(
+            '<header class="page-hero"><div class="container">'
+            '<p class="kicker"><span></span>Industries we know</p>'
+            '<h1>Web Design by Industry in Goa</h1>'
+            '<p class="lede">Websites shaped around the way each Goa sector actually earns, from bookings to enquiries to online sales.</p>'
+            '</div></header>'
+            '<section class="section section--surface" data-reveal><div class="container">'
+            '<div class="section-heading"><h2>Goa industries</h2></div>'
+            f'<ul class="link-columns">{industry_links}</ul>'
+            '</div></section>'
+        ),
+    ))
+
+    for area in MATRIX_AREAS:
+        full = full_name(area)
+        svc_links = "".join(
+            f'<li><a href="/{sslug}-in-{area.slug}/">{html.escape(sname)} in {html.escape(area.name)}</a></li>'
+            for sslug, sname, _ in MATRIX_SERVICES
+        )
+        ind_links = "".join(
+            f'<li><a href="/industries/{islug}-website-design-in-{area.slug}/">{html.escape(iname)} websites in {html.escape(area.name)}</a></li>'
+            for islug, iname, _ in MATRIX_INDUSTRIES
+        )
+        faqs = (
+            Faq(f"Do you serve businesses in {area.name}?", f"Yes. Sanctify serves businesses in {full} and across Goa from its studio in Vasco-da-Gama, by phone, WhatsApp and email."),
+            Faq(f"What web services are available in {area.name}?", "Website design and development, ecommerce, redesign, maintenance, WordPress, UI and UX, speed optimization and landing pages."),
+        )
+        intro = (
+            f'<h2>Web design for {html.escape(full)}</h2>'
+            f'<p class="lede">{html.escape(area.blurb)}</p>'
+            f'<p>Sanctify plans clear, fast, responsive websites for businesses in {html.escape(area.name)}, working from its Goa studio and serving the whole state.</p>'
+            f'<ul class="link-columns">{svc_links}{ind_links}</ul>'
+        )
+        pages.append(Page(
+            route=f"/locations/{area.slug}/", fragment="",
+            title=_clamp(f"Web Design Company in {full}", 30, 70, " by Sanctify"),
+            description=_clamp(f"Web design and development for businesses in {full}. {area.blurb} Website, ecommerce and industry services by Sanctify.", 110, 175, " Serving businesses across Goa."),
+            label=f"Web design in {area.name}", schema_type="WebPage", service_name="Web design", faqs=faqs, matrix=True,
+            content_html=_matrix_body(
+                kicker=f"Serving {area.name}", h1=f"Web Design in {full}",
+                lede=f"Websites for businesses in {full}, planned around clear structure, speed and enquiries.",
+                intro_html=intro, faqs=faqs, image_stem=next_stem(),
+                image_alt=f"Web design planning for businesses in {area.name}, Goa",
+                related=_rel_button("/locations/", "All Goa locations") + _rel_button("/contact/", "Start an enquiry", secondary=True),
+            ),
+        ))
+
+    for sslug, sname, parent in MATRIX_SERVICES:
+        s_lower = sname.lower()
+        for area in MATRIX_AREAS:
+            full = full_name(area)
+            faqs = (
+                Faq(f"Do you build {s_lower} for businesses in {area.name}?", f"Yes. Sanctify plans and builds {s_lower} for businesses in {full} and across Goa, working from its studio in Vasco-da-Gama."),
+                Faq(f"How do we start a project in {area.name}?", "Share a short brief by WhatsApp, phone or the contact page, and we will discuss scope, structure and the right approach before any build."),
+            )
+            intro = (
+                f'<h2>{html.escape(sname)} for {html.escape(area.name)} businesses</h2>'
+                f'<p class="lede">{html.escape(area.blurb)}</p>'
+                f'<p>Sanctify approaches {html.escape(s_lower)} in {html.escape(area.name)} the same careful way as anywhere in Goa: understand the business first, then plan clear structure, responsive design and a fast, maintainable build.</p>'
+                '<ul class="tick-list"><li>Clear structure around real visitor decisions</li><li>Responsive, fast and accessible pages</li><li>Practical launch and handover</li></ul>'
+            )
+            related = _rel_button(parent, f"{sname} in Goa") + _rel_button(f"/locations/{area.slug}/", f"Web design in {area.name}", secondary=True)
+            pages.append(Page(
+                route=f"/{sslug}-in-{area.slug}/", fragment="",
+                title=_clamp(f"{sname} in {full}", 30, 70, " by Sanctify"),
+                description=_clamp(f"{sname} for businesses in {full}. {area.blurb} Clear structure, responsive design and a fast build by Sanctify.", 110, 175, " Serving businesses across Goa."),
+                label=f"{sname} in {area.name}", schema_type="WebPage", service_name=sname, faqs=faqs, matrix=True,
+                content_html=_matrix_body(
+                    kicker=f"{sname} in {area.name}", h1=f"{sname} in {full}",
+                    lede=f"{sname} for businesses in {full}, focused on clarity, speed and enquiries.",
+                    intro_html=intro, faqs=faqs, image_stem=next_stem(),
+                    image_alt=f"{sname} for a business in {area.name}, Goa", related=related,
+                ),
+            ))
+
+    for islug, iname, parent in MATRIX_INDUSTRIES:
+        i_lower = iname.lower()
+        for area in MATRIX_AREAS:
+            full = full_name(area)
+            faqs = (
+                Faq(f"Do you design websites for {i_lower} businesses in {area.name}?", f"Yes. Sanctify designs websites for {i_lower} businesses in {full} and across Goa, focused on clear structure, speed and enquiries."),
+                Faq(f"How do we begin a {i_lower} website in {area.name}?", "Send a short brief by WhatsApp, phone or the contact page, and we will talk through goals and scope before starting."),
+            )
+            intro = (
+                f'<h2>{html.escape(iname)} websites in {html.escape(area.name)}</h2>'
+                f'<p class="lede">{html.escape(area.blurb)}</p>'
+                f'<p>Sanctify builds {html.escape(i_lower)} websites for {html.escape(area.name)} around the decisions that matter to that sector, with clear structure, fast mobile pages and an easy path to enquire.</p>'
+                '<ul class="tick-list"><li>Content shaped around the customer decision</li><li>Fast, mobile-first, accessible pages</li><li>Clear enquiry and contact paths</li></ul>'
+            )
+            parent_button = _rel_button(parent, f"{iname} websites in Goa") if parent else _rel_button("/website-development-goa/", "Website development in Goa")
+            related = parent_button + _rel_button(f"/locations/{area.slug}/", f"Web design in {area.name}", secondary=True)
+            pages.append(Page(
+                route=f"/industries/{islug}-website-design-in-{area.slug}/", fragment="",
+                title=_clamp(f"{iname} Website Design in {full}", 30, 70, " by Sanctify"),
+                description=_clamp(f"{iname} website design for businesses in {full}. {area.blurb} Built around clear structure, speed and enquiries by Sanctify.", 110, 175, " Serving businesses across Goa."),
+                label=f"{iname} websites in {area.name}", schema_type="WebPage", service_name=f"{iname} website design", faqs=faqs, matrix=True,
+                content_html=_matrix_body(
+                    kicker=f"{iname} in {area.name}", h1=f"{iname} Website Design in {full}",
+                    lede=f"{iname} websites for businesses in {full}, built around clear structure, speed and enquiries.",
+                    intro_html=intro, faqs=faqs, image_stem=next_stem(),
+                    image_alt=f"{iname} website design for a business in {area.name}, Goa", related=related,
+                ),
+            ))
+
+    return tuple(pages)
+
+
+PAGES: Final[tuple[Page, ...]] = _CORE_PAGES + _build_blog_pages() + _build_matrix_pages()
 
 
 class AuditParser(HTMLParser):
@@ -1315,10 +1589,12 @@ def audit_site(*, css_file: str, js_file: str) -> None:
         if page.indexable:
             if parser.canonical != page.url:
                 errors.append(f"{relative}: incorrect canonical {parser.canonical!r}")
-            if not 45 <= len(parser.title) <= 65:
-                errors.append(f"{relative}: title length {len(parser.title)} is outside 45-65")
-            if not 130 <= len(parser.description) <= 170:
-                errors.append(f"{relative}: description length {len(parser.description)} is outside 130-170")
+            title_lo, title_hi = (30, 70) if page.matrix else (45, 65)
+            desc_lo, desc_hi = (110, 175) if page.matrix else (130, 170)
+            if not title_lo <= len(parser.title) <= title_hi:
+                errors.append(f"{relative}: title length {len(parser.title)} is outside {title_lo}-{title_hi}")
+            if not desc_lo <= len(parser.description) <= desc_hi:
+                errors.append(f"{relative}: description length {len(parser.description)} is outside {desc_lo}-{desc_hi}")
             if parser.title in seen_titles or parser.description in seen_descriptions:
                 errors.append(f"{relative}: duplicate title or description")
             seen_titles.add(parser.title)
