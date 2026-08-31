@@ -14,6 +14,20 @@ SEO research, two-domain canonical ownership, and implementation planning for a 
 - [`docs/seo/content-roadmap.csv`](docs/seo/content-roadmap.csv) — 29 phased build, improvement, and consolidation work items with canonical ownership.
 - [`tools/build_keyword_inventory.py`](tools/build_keyword_inventory.py) — dependency-free generator for the three inventories plus ownership, canonical, roadmap, and migration-readiness validation.
 
+## Build the static site
+
+Python 3 standard library only is required. The build uses staged replacement for `dist/`, fingerprints CSS and JavaScript, generates route directories plus crawl files, and runs metadata, asset-manifest, image, and internal-link audits.
+
+```bash
+python3 tools/build_site.py
+```
+
+The generated `dist/` directory is intentionally kept as the FTP web root and review artifact. The builder renders and audits a sibling staging directory before replacement, keeps the prior artifact as a backup during the rename sequence, rolls back rename errors, and recovers an interrupted replacement on the next run. This is a recoverable staged replacement, not a single atomic directory exchange.
+
+## Before production deployment
+
+This branch is a review build, not a production deployment. Complete and approve [`docs/seo/business-facts-required.md`](docs/seo/business-facts-required.md) before upload, especially the Sanctify relationship wording, service availability, lead routing, privacy responsibility, and any contact or proof details. Production launch also requires resolving the current host-level 403 and verifying the generated redirects, headers, 404 response, canonical URLs, robots file, and sitemap on the actual shared host.
+
 ## Rebuild the inventories
 
 ```bash
