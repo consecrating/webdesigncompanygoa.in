@@ -300,7 +300,7 @@ details p { max-width: 68ch; margin: 0; padding: 0 60px 28px 0; color: var(--mut
 .insight-card p { font-size: 15px; }
 .insight-card strong { margin-top: 24px; display: inline-flex; align-items: center; gap: 8px; color: var(--blue); font-family: var(--heading); font-size: 13px; }
 
-.page-hero { padding: clamp(82px, 9vw, 128px) 0 clamp(80px, 9vw, 130px); overflow: hidden; background: var(--surface-soft); }
+.page-hero { padding: clamp(82px, 9vw, 128px) 0 clamp(80px, 9vw, 130px); position: relative; overflow: hidden; background: var(--surface-soft); }
 .page-hero::after { content: ""; width: 460px; height: 460px; position: absolute; right: -130px; top: 110px; border: 1px solid rgb(5 76 224 / 0.13); border-radius: 50%; box-shadow: 0 0 0 55px rgb(5 76 224 / 0.035), 0 0 0 110px rgb(5 76 224 / 0.025); }
 .page-hero .container { position: relative; z-index: 1; }
 .page-hero .lede { margin-top: 24px; }
