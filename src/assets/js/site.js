@@ -113,3 +113,15 @@ if (progressBar instanceof HTMLElement && !reduceMotion) {
   );
   updateScrollProgress();
 }
+
+const scrollTopButton = document.querySelector(".scroll-top");
+if (scrollTopButton instanceof HTMLButtonElement) {
+  const toggleScrollTop = () => {
+    scrollTopButton.classList.toggle("is-visible", window.scrollY > 600);
+  };
+  window.addEventListener("scroll", toggleScrollTop, { passive: true });
+  toggleScrollTop();
+  scrollTopButton.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+  });
+}

@@ -44,6 +44,11 @@ FONT_FILES: Final[tuple[str, ...]] = (
 FONT_WOFF2_FILES: Final[tuple[str, ...]] = tuple(
     name for name in FONT_FILES if name.endswith(".woff2")
 )
+FAVICON_FILES: Final[tuple[str, ...]] = (
+    "favicon.ico",
+    "favicon.svg",
+    "apple-touch-icon.png",
+)
 IMAGE_DIMENSIONS: Final[dict[str, tuple[int, int]]] = {
     **{
         f"{stem}-720.webp": (720, 402)
@@ -937,6 +942,13 @@ def copy_assets() -> tuple[str, str]:
         if name.endswith(".txt") and "SIL OPEN FONT LICENSE" not in source.read_text(encoding="utf-8"):
             raise ValueError(f"Invalid font license: {source}")
         shutil.copy2(source, font_target / name)
+
+    asset_root = SRC / "assets"
+    for name in FAVICON_FILES:
+        source = asset_root / name
+        if not source.is_file():
+            raise ValueError(f"Expected favicon is not a file: {source}")
+        shutil.copy2(source, BUILD_DIR / name)
     return css_name, js_name
 
 
@@ -1192,6 +1204,7 @@ def expected_output_manifest(*, css_file: str, js_file: str) -> set[Path]:
     expected.update(output_path_for(page).relative_to(BUILD_DIR) for page in PAGES)
     expected.update(Path("assets") / "images" / name for name in IMAGE_FILES)
     expected.update(Path("assets") / "fonts" / name for name in FONT_FILES)
+    expected.update(Path(name) for name in FAVICON_FILES)
     return expected
 
 
