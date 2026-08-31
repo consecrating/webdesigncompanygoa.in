@@ -1392,8 +1392,10 @@ ErrorDocument 404 /404.html
   </FilesMatch>
 </IfModule>
 """
+    urllist = "".join(f"{url}\n" for url in indexable_urls)
     (BUILD_DIR / "robots.txt").write_text(robots, encoding="utf-8")
     (BUILD_DIR / "sitemap.xml").write_text(sitemap, encoding="utf-8")
+    (BUILD_DIR / "urllist.txt").write_text(urllist, encoding="utf-8")
     (BUILD_DIR / ".htaccess").write_text(htaccess, encoding="utf-8")
 
 
@@ -1471,6 +1473,7 @@ def expected_output_manifest(*, css_file: str, js_file: str) -> set[Path]:
     expected = {
         Path("robots.txt"),
         Path("sitemap.xml"),
+        Path("urllist.txt"),
         Path(".htaccess"),
         Path("assets") / "css" / css_file,
         Path("assets") / "js" / js_file,
