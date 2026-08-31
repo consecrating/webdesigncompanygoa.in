@@ -125,6 +125,103 @@ PAGES: Final[tuple[Page, ...]] = (
         ),
     ),
     Page(
+        route="/website-redesign-goa/",
+        fragment="website-redesign-goa.html",
+        title="Website Redesign Services in Goa | Web Design by Sanctify",
+        description="Plan a website redesign for a business serving Goa, improving structure, content, responsive design and speed without discarding pages that already work.",
+        label="Website redesign in Goa",
+        schema_type="WebPage",
+        service_name="Website redesign",
+        faqs=(
+            Faq("Will a redesign lose my existing pages?", "A redesign begins with an audit so pages that already work keep their address and intent, and redirects are planned when any address must change."),
+            Faq("Can you redesign only part of the website?", "Yes. A focused redesign can improve structure, key templates or specific journeys when a full rebuild is not required by the review."),
+            Faq("Do you promise better rankings after a redesign?", "No ranking or traffic outcome is promised. The work aims for a clearer, faster and more usable website with a careful migration plan."),
+        ),
+    ),
+    Page(
+        route="/website-maintenance-goa/",
+        fragment="website-maintenance-goa.html",
+        title="Website Maintenance Services in Goa | by Sanctify",
+        description="Understand website maintenance for businesses serving Goa, covering updates, backups, security checks, small content edits and dependable ongoing support.",
+        label="Website maintenance in Goa",
+        schema_type="WebPage",
+        service_name="Website maintenance",
+        faqs=(
+            Faq("What does website maintenance include?", "Maintenance can include software updates, regular backups, security checks, small content edits and routine health checks for links, forms and speed."),
+            Faq("Do you offer a fixed support guarantee?", "No fixed uptime or response guarantee is stated here. Support hours and response expectations are agreed against real needs before a plan is confirmed."),
+            Faq("Can you maintain a website you did not build?", "Yes, after a review of the current platform, hosting access and code, so the maintenance scope and any risks are understood before work begins."),
+        ),
+    ),
+    Page(
+        route="/wordpress-website-design-goa/",
+        fragment="wordpress-website-design-goa.html",
+        title="WordPress Website Design Company in Goa | Sanctify",
+        description="Explore WordPress website design and development for businesses serving Goa, with editable content, responsive layouts and a maintainable long-term setup.",
+        label="WordPress website design in Goa",
+        schema_type="WebPage",
+        service_name="WordPress website design",
+        faqs=(
+            Faq("Is WordPress always the right platform?", "No. WordPress suits many content-led sites, but the platform is chosen after discovery, based on requirements, editing needs, hosting and the long-term maintenance plan."),
+            Faq("Can you build an online store on WordPress?", "Yes, WooCommerce can support selling once catalogue, checkout, payment and operational needs are confirmed for feasibility during discovery."),
+            Faq("Will the website be easy to edit?", "The content model is structured around how the team manages pages, so routine text and image changes can be made without a developer."),
+        ),
+    ),
+    Page(
+        route="/website-design-cost-goa/",
+        fragment="website-design-cost-goa.html",
+        title="Website Design Cost in Goa | Scope and Pricing Factors",
+        description="Understand what shapes website design cost in Goa, including scope, pages, content, functionality and maintenance, before you request a tailored quote.",
+        label="Website design cost in Goa",
+        schema_type="WebPage",
+        faqs=(
+            Faq("How much does a website cost in Goa?", "Cost depends on scope, so there is no single price. Page count, content readiness, features, design depth and maintenance all shape a tailored quote."),
+            Faq("Why is there no price list on this page?", "A public price for every project would mislead, because two sites with the same page count can involve very different work. Ranges are shared against a real brief."),
+            Faq("How do I get an accurate quote?", "Prepare the business goal, approximate page count, required features and content owner, then continue to the enquiry route to discuss a tailored quote."),
+        ),
+    ),
+    Page(
+        route="/ui-ux-design-goa/",
+        fragment="ui-ux-design-goa.html",
+        title="UI UX Design Services in Goa | Web Design by Sanctify",
+        description="Plan UI and UX design for websites serving Goa, from user research and structure to accessible interface design that helps visitors make clear decisions.",
+        label="UI UX design in Goa",
+        schema_type="WebPage",
+        service_name="UI UX design",
+        faqs=(
+            Faq("What is the difference between UI and UX?", "UX shapes structure, journeys and how a site helps a visitor complete a task, while UI is the visual interface layer of type, colour, spacing and components."),
+            Faq("Do you design before development starts?", "Yes. Research, structure and interface design are planned with implementation in mind so approved layouts translate into responsive front-end components."),
+            Faq("Is accessibility part of the design?", "Contrast, focus states, labels and readable type are treated as design decisions rather than extras added at the end of the project."),
+        ),
+    ),
+    Page(
+        route="/website-speed-optimization-goa/",
+        fragment="website-speed-optimization-goa.html",
+        title="Website Speed Optimization in Goa | Web Performance",
+        description="Improve website speed for businesses serving Goa, focusing on Core Web Vitals, responsive images, code and hosting factors that shape real world performance.",
+        label="Website speed optimization in Goa",
+        schema_type="WebPage",
+        service_name="Website speed optimization",
+        faqs=(
+            Faq("What usually makes a website slow?", "Large images, unused code, too many requests and slow hosting are common causes, but measurement is needed because each site slows down for different reasons."),
+            Faq("Can you promise a specific speed score?", "No fixed score is promised in advance. Results depend on the current build, hosting and content, so the work reports measured changes on the same tests."),
+            Faq("Do I need a full rebuild for better speed?", "Not always. Many gains come from images, caching and code cleanup, and a rebuild is only suggested when the current foundation truly limits performance."),
+        ),
+    ),
+    Page(
+        route="/landing-page-design-goa/",
+        fragment="landing-page-design-goa.html",
+        title="Landing Page Design Services in Goa | by Sanctify",
+        description="Plan focused landing pages for businesses serving Goa, built around one clear action, honest messaging and responsive design for campaign and ad traffic.",
+        label="Landing page design in Goa",
+        schema_type="WebPage",
+        service_name="Landing page design",
+        faqs=(
+            Faq("How is a landing page different from a homepage?", "A landing page focuses one audience on a single action for a campaign, while a homepage introduces the whole business and links to many sections."),
+            Faq("Do you guarantee a conversion rate?", "No conversion rate or result is promised in advance. The aim is a clear, fast and honest page that gives a campaign a fair chance to work."),
+            Faq("Can a landing page use real proof only?", "Yes. Only honest, verifiable trust signals are used, because invented claims or numbers waste ad spend and quickly damage visitor trust."),
+        ),
+    ),
+    Page(
         route="/about/",
         fragment="about.html",
         title="About Web Design Company Goa | Specialist by Sanctify",
@@ -319,22 +416,45 @@ def install_build() -> None:
         remove_managed_directory(BACKUP_DIR, expected_name=".dist-backup")
 
 
+def rewrite_preview_markup(markup: str, *, depth: int) -> str:
+    """Rewrite root-relative asset and page links to depth-relative branch paths."""
+    asset_prefix = ("../" * depth) + "../dist/assets/"
+    page_prefix = "../" * depth
+    markup = markup.replace('="/assets/', f'="{asset_prefix}')
+    markup = markup.replace(", /assets/", f", {asset_prefix}")
+
+    def replace_page_link(match: re.Match[str]) -> str:
+        path = match.group("path")
+        fragment = match.group("frag") or ""
+        if path == "":
+            target = "index.html"
+        elif path.endswith("/"):
+            target = f"{path}index.html"
+        else:
+            target = path
+        return f'href="{page_prefix}{target}{fragment}"'
+
+    return re.sub(r'href="/(?P<path>[^"#]*)(?P<frag>#[^"]*)?"', replace_page_link, markup)
+
+
 def write_review_preview() -> None:
-    """Write a branch-hostable homepage preview without changing production paths."""
+    """Write a branch-hostable, fully navigable preview without changing production paths."""
     remove_managed_directory(REVIEW_DIR, expected_name="review-preview")
     REVIEW_DIR.mkdir()
-    preview = (DIST / "index.html").read_text(encoding="utf-8")
-    preview = preview.replace('"/assets/', '"../dist/assets/')
-    preview = preview.replace(" /assets/", " ../dist/assets/")
-    preview = preview.replace('href="/', 'href="../dist/')
-    if '"/assets/' in preview or 'href="/' in preview or " /assets/" in preview:
-        raise ValueError("Review preview contains unresolved root-relative paths")
-    if 'href="../dist/assets/css/' not in preview:
-        raise ValueError("Review preview stylesheet path was not rewritten")
-    if 'src="../dist/assets/js/' not in preview:
-        raise ValueError("Review preview script path was not rewritten")
-    preview = "\n".join(line.rstrip() for line in preview.rstrip().splitlines()) + "\n"
-    (REVIEW_DIR / "index.html").write_text(preview, encoding="utf-8")
+    for page in PAGES:
+        relative = output_path_for(page).relative_to(BUILD_DIR)
+        depth = len(relative.parts) - 1
+        markup = (DIST / relative).read_text(encoding="utf-8")
+        rewritten = rewrite_preview_markup(markup, depth=depth)
+        if '="/assets/' in rewritten or 'href="/' in rewritten:
+            raise ValueError(f"Review preview has unresolved root-relative paths: {relative}")
+        asset_prefix = ("../" * depth) + "../dist/assets/"
+        if f'href="{asset_prefix}css/' not in rewritten or f'src="{asset_prefix}js/' not in rewritten:
+            raise ValueError(f"Review preview asset paths were not rewritten: {relative}")
+        rewritten = "\n".join(line.rstrip() for line in rewritten.rstrip().splitlines()) + "\n"
+        destination = REVIEW_DIR / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_text(rewritten, encoding="utf-8")
 
 
 def webp_dimensions(data: bytes) -> tuple[int, int]:
@@ -584,7 +704,8 @@ def render_page(page: Page, *, template: str, css_file: str, js_file: str) -> st
     unresolved = re.findall(r"\{\{[A-Z_]+\}\}", rendered)
     if unresolved:
         raise ValueError(f"Unresolved template markers in {page.route}: {unresolved}")
-    return rendered + "\n"
+    normalized = "\n".join(line.rstrip() for line in rendered.splitlines())
+    return normalized.rstrip() + "\n"
 
 
 def output_path_for(page: Page) -> Path:
