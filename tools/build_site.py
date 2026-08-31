@@ -17,6 +17,7 @@ from urllib.parse import urlparse
 ROOT: Final[Path] = Path(__file__).resolve().parents[1]
 SRC: Final[Path] = ROOT / "src"
 DIST: Final[Path] = ROOT / "dist"
+REVIEW_DIR: Final[Path] = ROOT / "review-preview"
 BUILD_DIR: Final[Path] = ROOT / ".dist-build"
 BACKUP_DIR: Final[Path] = ROOT / ".dist-backup"
 BASE_URL: Final[str] = "https://webdesigncompanygoa.in"
@@ -34,6 +35,15 @@ IMAGE_STEMS: Final[tuple[str, ...]] = (
 IMAGE_FILES: Final[tuple[str, ...]] = tuple(
     f"{stem}-{width}.webp" for stem in IMAGE_STEMS for width in (720, 1376)
 ) + ("social-preview.jpg",)
+FONT_FILES: Final[tuple[str, ...]] = (
+    "plus-jakarta-sans-latin-variable.woff2",
+    "roboto-latin-variable.woff2",
+    "OFL-plus-jakarta-sans.txt",
+    "OFL-roboto.txt",
+)
+FONT_WOFF2_FILES: Final[tuple[str, ...]] = tuple(
+    name for name in FONT_FILES if name.endswith(".woff2")
+)
 IMAGE_DIMENSIONS: Final[dict[str, tuple[int, int]]] = {
     **{
         f"{stem}-720.webp": (720, 402)
@@ -309,6 +319,24 @@ def install_build() -> None:
         remove_managed_directory(BACKUP_DIR, expected_name=".dist-backup")
 
 
+def write_review_preview() -> None:
+    """Write a branch-hostable homepage preview without changing production paths."""
+    remove_managed_directory(REVIEW_DIR, expected_name="review-preview")
+    REVIEW_DIR.mkdir()
+    preview = (DIST / "index.html").read_text(encoding="utf-8")
+    preview = preview.replace('"/assets/', '"../dist/assets/')
+    preview = preview.replace(" /assets/", " ../dist/assets/")
+    preview = preview.replace('href="/', 'href="../dist/')
+    if '"/assets/' in preview or 'href="/' in preview or " /assets/" in preview:
+        raise ValueError("Review preview contains unresolved root-relative paths")
+    if 'href="../dist/assets/css/' not in preview:
+        raise ValueError("Review preview stylesheet path was not rewritten")
+    if 'src="../dist/assets/js/' not in preview:
+        raise ValueError("Review preview script path was not rewritten")
+    preview = "\n".join(line.rstrip() for line in preview.rstrip().splitlines()) + "\n"
+    (REVIEW_DIR / "index.html").write_text(preview, encoding="utf-8")
+
+
 def webp_dimensions(data: bytes) -> tuple[int, int]:
     """Read WebP dimensions from a validated RIFF container."""
     if len(data) < 20 or data[:4] != b"RIFF" or data[8:12] != b"WEBP":
@@ -414,11 +442,14 @@ def copy_assets() -> tuple[str, str]:
     css_target = BUILD_DIR / "assets" / "css"
     js_target = BUILD_DIR / "assets" / "js"
     image_target = BUILD_DIR / "assets" / "images"
+    font_target = BUILD_DIR / "assets" / "fonts"
     css_target.mkdir(parents=True)
     js_target.mkdir(parents=True)
     image_target.mkdir(parents=True)
+    font_target.mkdir(parents=True)
     shutil.copy2(css_source, css_target / css_name)
     shutil.copy2(js_source, js_target / js_name)
+
     image_dir = SRC / "assets" / "images"
     expected_images = set(IMAGE_FILES)
     actual_images = {path.name for path in image_dir.iterdir() if path.is_file()}
@@ -434,6 +465,23 @@ def copy_assets() -> tuple[str, str]:
             raise ValueError(f"Expected image is not a file: {source}")
         validate_image(source, expected=IMAGE_DIMENSIONS[name])
         shutil.copy2(source, image_target / name)
+
+    font_dir = SRC / "assets" / "fonts"
+    expected_fonts = set(FONT_FILES)
+    actual_fonts = {path.name for path in font_dir.iterdir() if path.is_file()}
+    missing_fonts = sorted(expected_fonts - actual_fonts)
+    unexpected_fonts = sorted(actual_fonts - expected_fonts)
+    if missing_fonts or unexpected_fonts:
+        raise ValueError(
+            f"Font manifest mismatch; missing={missing_fonts}, unexpected={unexpected_fonts}"
+        )
+    for name in FONT_FILES:
+        source = font_dir / name
+        if name.endswith(".woff2") and source.read_bytes()[:4] != b"wOF2":
+            raise ValueError(f"Invalid WOFF2 signature: {source}")
+        if name.endswith(".txt") and "SIL OPEN FONT LICENSE" not in source.read_text(encoding="utf-8"):
+            raise ValueError(f"Invalid font license: {source}")
+        shutil.copy2(source, font_target / name)
     return css_name, js_name
 
 
@@ -521,9 +569,9 @@ def render_page(page: Page, *, template: str, css_file: str, js_file: str) -> st
         "{{ROBOTS_META}}": "" if page.indexable else '<meta name="robots" content="noindex, follow">',
         "{{CANONICAL_META}}": f'<link rel="canonical" href="{escaped(page.url)}">' if page.indexable else "",
         "{{PAGE_URL}}": escaped(page.url),
-        "{{OG_IMAGE_META}}": f'<meta property="og:image" content="{image_url}"><meta property="og:image:width" content="{IMAGE_WIDTH}"><meta property="og:image:height" content="{IMAGE_HEIGHT}"><meta property="og:image:alt" content="Illustration of a website design workspace in Goa">',
-        "{{TWITTER_IMAGE_META}}": f'<meta name="twitter:image" content="{image_url}"><meta name="twitter:image:alt" content="Illustration of a website design workspace in Goa">',
-        "{{HERO_PRELOAD}}": '<link rel="preload" as="image" href="/assets/images/hero-goa-web-design-studio-1376.webp" imagesrcset="/assets/images/hero-goa-web-design-studio-720.webp 720w, /assets/images/hero-goa-web-design-studio-1376.webp 1376w" imagesizes="(max-width: 767px) calc(100vw - 28px), 680px" fetchpriority="high">' if page.hero_image else "",
+        "{{OG_IMAGE_META}}": f'<meta property="og:image" content="{image_url}"><meta property="og:image:width" content="{IMAGE_WIDTH}"><meta property="og:image:height" content="{IMAGE_HEIGHT}"><meta property="og:image:alt" content="Indian web designer presenting a website in a bright Goa studio">',
+        "{{TWITTER_IMAGE_META}}": f'<meta name="twitter:image" content="{image_url}"><meta name="twitter:image:alt" content="Indian web designer presenting a website in a bright Goa studio">',
+        "{{HERO_PRELOAD}}": '<link rel="preload" as="image" href="/assets/images/hero-goa-web-design-studio-1376.webp" imagesrcset="/assets/images/hero-goa-web-design-studio-720.webp 720w, /assets/images/hero-goa-web-design-studio-1376.webp 1376w" imagesizes="(max-width: 991px) calc(100vw - 28px), 720px" fetchpriority="high">' if page.hero_image else "",
         "{{CSS_FILE}}": css_file,
         "{{JS_FILE}}": js_file,
         "{{SCHEMA}}": schema_for(page),
@@ -573,12 +621,14 @@ ErrorDocument 404 /404.html
 
 <IfModule mod_mime.c>
   AddType image/webp .webp
+  AddType font/woff2 .woff2
 </IfModule>
 
 <IfModule mod_expires.c>
   ExpiresActive On
   ExpiresByType image/jpeg "access plus 30 days"
   ExpiresByType image/webp "access plus 30 days"
+  ExpiresByType font/woff2 "access plus 1 year"
   ExpiresByType text/css "access plus 1 year"
   ExpiresByType application/javascript "access plus 1 year"
 </IfModule>
@@ -589,9 +639,9 @@ ErrorDocument 404 /404.html
   </FilesMatch>
 </IfModule>
 """
-    (BUILD_DIR / "robots.txt").write_text(robots, encoding="utf-8", newline="\n")
-    (BUILD_DIR / "sitemap.xml").write_text(sitemap, encoding="utf-8", newline="\n")
-    (BUILD_DIR / ".htaccess").write_text(htaccess, encoding="utf-8", newline="\n")
+    (BUILD_DIR / "robots.txt").write_text(robots, encoding="utf-8")
+    (BUILD_DIR / "sitemap.xml").write_text(sitemap, encoding="utf-8")
+    (BUILD_DIR / ".htaccess").write_text(htaccess, encoding="utf-8")
 
 
 def resolve_internal_href(href: str) -> Path | None:
@@ -674,6 +724,7 @@ def expected_output_manifest(*, css_file: str, js_file: str) -> set[Path]:
     }
     expected.update(output_path_for(page).relative_to(BUILD_DIR) for page in PAGES)
     expected.update(Path("assets") / "images" / name for name in IMAGE_FILES)
+    expected.update(Path("assets") / "fonts" / name for name in FONT_FILES)
     return expected
 
 
@@ -693,6 +744,17 @@ def audit_site(*, css_file: str, js_file: str) -> None:
         errors.append(f"Missing output files: {[str(path) for path in missing_files]}")
     if unexpected_files:
         errors.append(f"Unexpected output files: {[str(path) for path in unexpected_files]}")
+    css_path = BUILD_DIR / "assets" / "css" / css_file
+    if css_path.is_file():
+        css_text = css_path.read_text(encoding="utf-8")
+        for external_font_marker in ("@import", "fonts.googleapis.com", "fonts.gstatic.com"):
+            if external_font_marker in css_text:
+                errors.append(
+                    f"Runtime font dependency remains in stylesheet: {external_font_marker}"
+                )
+        for font_name in FONT_WOFF2_FILES:
+            if f'../fonts/{font_name}' not in css_text:
+                errors.append(f"Stylesheet does not reference local font: {font_name}")
     for name, expected_dimensions in IMAGE_DIMENSIONS.items():
         image_path = BUILD_DIR / "assets" / "images" / name
         if image_path.is_file():
@@ -708,6 +770,10 @@ def audit_site(*, css_file: str, js_file: str) -> None:
     page_by_path = {output_path_for(page): page for page in PAGES}
     for path in html_files:
         text = path.read_text(encoding="utf-8")
+        if "\u2197" in text:
+            errors.append(
+                f"{path.relative_to(BUILD_DIR)}: font-dependent U+2197 arrow is forbidden"
+            )
         parser = AuditParser()
         parser.feed(text)
         page = page_by_path.get(path)
@@ -725,12 +791,12 @@ def audit_site(*, css_file: str, js_file: str) -> None:
             "description": page.description,
             "viewport": "width=device-width, initial-scale=1",
             "color-scheme": "light",
-            "theme-color": "#f4f7f5",
+            "theme-color": "#edf1fa",
             "twitter:card": "summary_large_image",
             "twitter:title": page.title,
             "twitter:description": page.description,
             "twitter:image": f"{BASE_URL}/assets/images/social-preview.jpg",
-            "twitter:image:alt": "Illustration of a website design workspace in Goa",
+            "twitter:image:alt": "Indian web designer presenting a website in a bright Goa studio",
         }
         expected_property_meta = {
             "og:type": "website",
@@ -742,7 +808,7 @@ def audit_site(*, css_file: str, js_file: str) -> None:
             "og:image": f"{BASE_URL}/assets/images/social-preview.jpg",
             "og:image:width": str(IMAGE_WIDTH),
             "og:image:height": str(IMAGE_HEIGHT),
-            "og:image:alt": "Illustration of a website design workspace in Goa",
+            "og:image:alt": "Indian web designer presenting a website in a bright Goa studio",
         }
         for name, expected in expected_name_meta.items():
             if parser.meta_by_name.get(name) != expected:
@@ -880,10 +946,11 @@ def build() -> None:
     for page in PAGES:
         target = output_path_for(page)
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(render_page(page, template=template, css_file=css_file, js_file=js_file), encoding="utf-8", newline="\n")
+        target.write_text(render_page(page, template=template, css_file=css_file, js_file=js_file), encoding="utf-8")
     write_site_files()
     audit_site(css_file=css_file, js_file=js_file)
     install_build()
+    write_review_preview()
 
 
 if __name__ == "__main__":
