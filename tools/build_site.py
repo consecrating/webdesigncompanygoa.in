@@ -825,6 +825,29 @@ MATRIX_INDUSTRIES: Final[tuple[tuple[str, str, str], ...]] = (
 
 _WA_HREF: Final[str] = "https://wa.me/919923352923?text=Hi%2C%20I%20would%20like%20to%20enquire%20about%20a%20website."
 
+NORTH_SLUGS: Final[tuple[str, ...]] = (
+    "panaji", "porvorim", "mapusa", "calangute", "candolim", "baga",
+    "anjuna", "vagator", "morjim", "siolim", "assagao", "sinquerim",
+)
+SOUTH_SLUGS: Final[tuple[str, ...]] = (
+    "margao", "vasco-da-gama", "colva", "benaulim", "palolem", "ponda", "varca", "cavelossim",
+)
+
+INDUSTRY_BLURB: Final[dict[str, str]] = {
+    "hotel": "Hotel websites in Goa live or die on mobile speed, clear room and rate information and a booking or enquiry path that stays one tap away.",
+    "resort": "Resort websites carry rooms, dining, spa and activities for domestic and international guests, so structure and the booking journey need real planning.",
+    "restaurant": "Restaurant websites put the menu, timings, location and a simple reservation or WhatsApp order within a tap, so hungry visitors act fast.",
+    "travel-and-tours": "Travel and tour operators need clear packages or itineraries, availability or enquiry flows and strong lead capture for domestic and overseas travellers.",
+    "real-estate": "Real estate websites need property listings, search filters, locality pages and clean routing of enquiries to the right person.",
+    "wedding": "Wedding planner sites sell on a visual portfolio, clear package and venue detail and a trusted, simple enquiry flow for couples deciding from afar.",
+    "cafe-bar": "Cafe and bar websites focus on atmosphere, menu, timings and location, with a quick way to reserve a table or ask a question.",
+    "spa-wellness": "Spa and wellness sites present treatments, packages and timings clearly and make booking or enquiring feel calm and simple.",
+    "fitness-yoga": "Fitness and yoga studios need clear class and membership information, trainer profiles and an easy path to book a session or a trial.",
+    "clinic-healthcare": "Clinic and healthcare websites earn trust with clear services, doctor profiles, timings and a straightforward appointment enquiry.",
+    "retail-boutique": "Retail and boutique sites showcase products and collections and can grow into online selling once catalogue and delivery needs are set.",
+    "professional-services": "Professional services firms win work with clear service pages, credible proof and a simple, direct way to get in touch.",
+}
+
 
 def _clamp(text: str, lo: int, hi: int, pad: str) -> str:
     text = " ".join(text.split())
@@ -864,6 +887,148 @@ def _rel_button(href: str, label: str, *, secondary: bool = False) -> str:
     return f'<a class="{cls}" href="{href}">{html.escape(label)}</a>'
 
 
+def _arrow_link(href: str, label: str) -> str:
+    return (
+        f'<a class="text-link" href="{href}">{html.escape(label)} '
+        '<span class="arrow-icon" aria-hidden="true"></span></a>'
+    )
+
+
+def _area_card(area: Area) -> str:
+    return (
+        '<article class="scope-block">'
+        f'<h3>{html.escape(area.name)}</h3>'
+        f'<p>{html.escape(area.blurb)}</p>'
+        f'{_arrow_link(f"/locations/{area.slug}/", f"Web design in {area.name}")}'
+        '</article>'
+    )
+
+
+def _industry_card(islug: str, iname: str, parent: str) -> str:
+    href = parent or f"/industries/{islug}-website-design-in-panaji/"
+    return (
+        '<article class="scope-block">'
+        f'<h3>{html.escape(iname)}</h3>'
+        f'<p>{html.escape(INDUSTRY_BLURB[islug])}</p>'
+        f'{_arrow_link(href, f"{iname} websites in Goa")}'
+        '</article>'
+    )
+
+
+def _locations_index_body(faqs: tuple[Faq, ...]) -> str:
+    by_slug = {a.slug: a for a in MATRIX_AREAS}
+    north_cards = "".join(_area_card(by_slug[s]) for s in NORTH_SLUGS)
+    south_cards = "".join(_area_card(by_slug[s]) for s in SOUTH_SLUGS)
+    region_cards = "".join(_area_card(by_slug[s]) for s in ("north-goa", "south-goa"))
+    return (
+        '<header class="page-hero"><div class="container">'
+        '<p class="kicker"><span></span>Areas we serve</p>'
+        '<h1>Web Design Across Goa</h1>'
+        '<p class="lede">Sanctify plans fast, responsive websites for businesses across North Goa and South Goa from a single studio in Vasco-da-Gama. Choose your area to see local web design and development.</p>'
+        '<div class="button-row">'
+        f'<a class="button button--whatsapp" href="{_WA_HREF}" target="_blank" rel="noopener">Message on WhatsApp</a>'
+        '<a class="button button--secondary" href="/contact/">Start an enquiry</a>'
+        '</div></div></header>'
+        '<section class="section section--surface" data-reveal><div class="container split">'
+        '<div>'
+        '<div class="section-heading"><h2>One studio, the whole state</h2>'
+        '<p class="lede">Wherever your customers are in Goa, the approach is the same: understand the business first, then plan clear structure, responsive design and a fast build.</p></div>'
+        '<ul class="tick-list">'
+        '<li>Responsive, fast pages built for mobile</li>'
+        '<li>Structure shaped around local search intent</li>'
+        '<li>Clear WhatsApp, call and enquiry paths</li>'
+        '<li>One team serving North and South Goa</li>'
+        '</ul>'
+        '</div>'
+        f'{_matrix_image("goa-local-business-owner", "Goa business owner reviewing a new website design")}'
+        '</div></section>'
+        '<section class="section" data-reveal><div class="container">'
+        '<div class="section-heading section-heading--spread"><h2>North Goa</h2>'
+        '<p>The busy coastal and market belt from Panaji up to the northern beaches.</p></div>'
+        f'<div class="scope-grid">{north_cards}</div>'
+        '</div></section>'
+        '<section class="section section--soft" data-reveal><div class="container">'
+        '<div class="section-heading section-heading--spread"><h2>South Goa</h2>'
+        '<p>Margao, Vasco and the quieter southern coast and inland towns.</p></div>'
+        f'<div class="scope-grid">{south_cards}</div>'
+        '</div></section>'
+        '<section class="section" data-reveal><div class="container">'
+        '<div class="section-heading"><h2>Prefer a wider area?</h2>'
+        '<p class="lede">If you serve a whole region rather than one town, start with a regional page.</p></div>'
+        f'<div class="scope-grid">{region_cards}</div>'
+        '</div></section>'
+        '<section class="section" data-reveal><div class="container"><div class="cta-panel">'
+        '<div><h2>Serving your part of Goa</h2>'
+        '<p>Tell us where you are and what you do, and we will plan a website that fits your area and the customers you want to reach.</p>'
+        '<div class="button-row">'
+        f'<a class="button button--whatsapp" href="{_WA_HREF}" target="_blank" rel="noopener">Message on WhatsApp</a>'
+        '<a class="button button--light" href="/contact/">Start an enquiry</a>'
+        '</div></div>'
+        f'{_matrix_image("client-conversation-goa", "Sanctify team discussing a Goa website project with a client")}'
+        '</div></div></section>'
+        '<section class="section" data-reveal><div class="narrow">'
+        '<div class="section-heading"><h2>Common questions</h2></div>'
+        f'{_matrix_faq_html(faqs)}'
+        f'<div class="button-row">{_rel_button("/industries/", "Web design by industry")}{_rel_button("/contact/", "Start an enquiry", secondary=True)}</div>'
+        '</div></section>'
+    )
+
+
+def _industries_index_body(faqs: tuple[Faq, ...]) -> str:
+    by_slug = {islug: (islug, iname, parent) for islug, iname, parent in MATRIX_INDUSTRIES}
+    hospitality = ("hotel", "resort", "restaurant", "travel-and-tours", "cafe-bar", "wedding")
+    local = ("real-estate", "spa-wellness", "fitness-yoga", "clinic-healthcare", "retail-boutique", "professional-services")
+    hosp_cards = "".join(_industry_card(*by_slug[s]) for s in hospitality)
+    local_cards = "".join(_industry_card(*by_slug[s]) for s in local)
+    return (
+        '<header class="page-hero"><div class="container">'
+        '<p class="kicker"><span></span>Industries we know</p>'
+        '<h1>Web Design by Industry in Goa</h1>'
+        '<p class="lede">Websites shaped around the way each Goa sector actually earns, from bookings and enquiries to listings and online sales. Pick your industry to see the approach.</p>'
+        '<div class="button-row">'
+        f'<a class="button button--whatsapp" href="{_WA_HREF}" target="_blank" rel="noopener">Message on WhatsApp</a>'
+        '<a class="button button--secondary" href="/contact/">Start an enquiry</a>'
+        '</div></div></header>'
+        '<section class="section section--surface" data-reveal><div class="container split">'
+        '<div>'
+        '<div class="section-heading"><h2>Built around how you earn</h2>'
+        '<p class="lede">Every sector turns visitors into customers differently. The structure, content and enquiry flow are planned around the decision your customer actually makes.</p></div>'
+        '<ul class="tick-list">'
+        '<li>Content shaped around the customer decision</li>'
+        '<li>Fast, mobile-first, accessible pages</li>'
+        '<li>Booking, enquiry and ordering paths that fit</li>'
+        '<li>Room to grow into online selling</li>'
+        '</ul>'
+        '</div>'
+        f'{_matrix_image("services-responsive-design-workspace", "Responsive website layouts planned for a Goa business")}'
+        '</div></section>'
+        '<section class="section" data-reveal><div class="container">'
+        '<div class="section-heading section-heading--spread"><h2>Hospitality and tourism</h2>'
+        '<p>Hotels, resorts, dining and experiences that depend on bookings and enquiries.</p></div>'
+        f'<div class="scope-grid">{hosp_cards}</div>'
+        '</div></section>'
+        '<section class="section section--soft" data-reveal><div class="container">'
+        '<div class="section-heading section-heading--spread"><h2>Local and professional</h2>'
+        '<p>Property, wellness, retail, healthcare and service businesses across Goa.</p></div>'
+        f'<div class="scope-grid">{local_cards}</div>'
+        '</div></section>'
+        '<section class="section" data-reveal><div class="container"><div class="cta-panel">'
+        '<div><h2>Not sure which fits?</h2>'
+        '<p>Tell us what your business does and how customers reach you today, and we will suggest a structure that suits your sector in Goa.</p>'
+        '<div class="button-row">'
+        f'<a class="button button--whatsapp" href="{_WA_HREF}" target="_blank" rel="noopener">Message on WhatsApp</a>'
+        '<a class="button button--light" href="/contact/">Start an enquiry</a>'
+        '</div></div>'
+        f'{_matrix_image("final-cta-goa-creative-team", "Sanctify creative team planning a Goa industry website")}'
+        '</div></div></section>'
+        '<section class="section" data-reveal><div class="narrow">'
+        '<div class="section-heading"><h2>Common questions</h2></div>'
+        f'{_matrix_faq_html(faqs)}'
+        f'<div class="button-row">{_rel_button("/locations/", "Web design by location")}{_rel_button("/contact/", "Start an enquiry", secondary=True)}</div>'
+        '</div></section>'
+    )
+
+
 def _matrix_body(*, kicker: str, h1: str, lede: str, intro_html: str, faqs: tuple[Faq, ...], image_stem: str, image_alt: str, related: str) -> str:
     return (
         '<header class="page-hero"><div class="container">'
@@ -898,48 +1063,28 @@ def _build_matrix_pages() -> tuple[Page, ...]:
     def full_name(area: Area) -> str:
         return f"{area.name}, Goa" if area.kind == "town" else area.name
 
-    area_links = "".join(
-        f'<li><a href="/locations/{a.slug}/">Web design in {html.escape(a.name)}</a></li>'
-        for a in MATRIX_AREAS
+    locations_faqs = (
+        Faq("Do you work with businesses across all of Goa?", "Yes. Sanctify works with businesses across North Goa and South Goa from its studio in Vasco-da-Gama, by phone, WhatsApp and email."),
+        Faq("Which Goa areas do you cover?", "Sanctify covers the main North Goa and South Goa towns, from Panaji, Mapusa and Calangute to Margao, Vasco and the southern coast, and the wider state."),
     )
     pages.append(Page(
         route="/locations/", fragment="",
         title=_clamp("Web Design Services Across Goa Locations", 30, 70, " by Sanctify"),
         description=_clamp("Explore web design and development by area across Goa, from Panaji and Mapusa to Margao, Vasco and the North and South Goa coastal belts, all by Sanctify.", 110, 175, " Serving businesses across Goa."),
-        label="Goa locations", schema_type="CollectionPage", matrix=True,
-        content_html=(
-            '<header class="page-hero"><div class="container">'
-            '<p class="kicker"><span></span>Areas we serve</p>'
-            '<h1>Web Design Across Goa</h1>'
-            '<p class="lede">Sanctify serves businesses across Goa from its studio in Vasco-da-Gama. Choose an area to see local web design and development.</p>'
-            '</div></header>'
-            '<section class="section section--surface" data-reveal><div class="container">'
-            '<div class="section-heading"><h2>Goa areas</h2></div>'
-            f'<ul class="link-columns">{area_links}</ul>'
-            '</div></section>'
-        ),
+        label="Goa locations", schema_type="CollectionPage", faqs=locations_faqs, matrix=True,
+        content_html=_locations_index_body(locations_faqs),
     ))
 
-    industry_links = "".join(
-        f'<li><a href="{parent or f"/industries/{islug}-website-design-in-panaji/"}">{html.escape(iname)} website design</a></li>'
-        for islug, iname, parent in MATRIX_INDUSTRIES
+    industries_faqs = (
+        Faq("Which industries do you build websites for in Goa?", "Sanctify builds websites for hospitality, tourism, real estate, weddings, wellness, retail, healthcare and professional services across Goa."),
+        Faq("Do you tailor the website to my industry?", "Yes. Each website is shaped around how that sector actually earns, from bookings and enquiries to listings and online sales."),
     )
     pages.append(Page(
         route="/industries/", fragment="",
         title=_clamp("Web Design for Goa Industries and Sectors", 30, 70, " by Sanctify"),
         description=_clamp("Web design and development tailored to Goa industries, from hotels, resorts and restaurants to real estate, weddings, wellness, retail and professional services.", 110, 175, " Built for Goa businesses."),
-        label="Industries", schema_type="CollectionPage", matrix=True,
-        content_html=(
-            '<header class="page-hero"><div class="container">'
-            '<p class="kicker"><span></span>Industries we know</p>'
-            '<h1>Web Design by Industry in Goa</h1>'
-            '<p class="lede">Websites shaped around the way each Goa sector actually earns, from bookings to enquiries to online sales.</p>'
-            '</div></header>'
-            '<section class="section section--surface" data-reveal><div class="container">'
-            '<div class="section-heading"><h2>Goa industries</h2></div>'
-            f'<ul class="link-columns">{industry_links}</ul>'
-            '</div></section>'
-        ),
+        label="Industries", schema_type="CollectionPage", faqs=industries_faqs, matrix=True,
+        content_html=_industries_index_body(industries_faqs),
     ))
 
     for area in MATRIX_AREAS:
