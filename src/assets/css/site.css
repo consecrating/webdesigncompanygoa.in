@@ -330,8 +330,9 @@ details p { max-width: 68ch; margin: 0; padding: 0 60px 28px 0; color: var(--mut
 .post-body h2 { margin-top: 42px; font-size: clamp(24px, 3vw, 32px); }
 .post-body p { margin-top: 14px; }
 .post-body .faq-list { margin-top: 24px; border-top: 1px solid #d5dcea; }
-.post-cta { margin-top: 40px; padding: 30px 32px; background: var(--surface-soft); border-radius: var(--radius-lg); }
-.post-cta p { margin: 0 0 4px; color: var(--ink); font-family: var(--heading); font-weight: 600; }
+.post-cta { margin: 40px 0 44px; padding: 34px 32px; background: var(--surface-soft); border-radius: var(--radius-lg); text-align: center; }
+.post-cta p { margin: 0 0 6px; color: var(--ink); font-family: var(--heading); font-weight: 600; }
+.post-cta .button-row { justify-content: center; }
 
 .button-icon { width: 18px; height: 18px; flex: 0 0 18px; fill: currentColor; }
 .button--whatsapp { background: #25d366; border-color: #25d366; color: #fff; --focus-ring: #0a7a34; box-shadow: 0 10px 25px rgb(37 211 102 / 0.26); }
@@ -422,6 +423,9 @@ details p { max-width: 68ch; margin: 0; padding: 0 60px 28px 0; color: var(--mut
 .footer-grid nav a:hover { color: #fff; }
 .footer-base { padding-top: 24px; display: flex; justify-content: space-between; gap: 20px; border-top: 1px solid rgb(255 255 255 / 0.16); font-size: 12px; }
 .footer-base p { margin: 0; }
+.footer-credit a { text-decoration: none; color: inherit; }
+.footer-credit a:hover { text-decoration: none; color: #fff; }
+.footer-credit sup { font-size: 0.68em; }
 
 .reveal-ready [data-reveal] { opacity: 0; transform: translateY(34px); }
 .reveal-ready [data-reveal="left"] { transform: translateX(-52px) rotateY(5deg); transform-origin: left center; }
